@@ -53,7 +53,7 @@ export function AppSidebar() {
   const { toggleSidebar, isMobile } = useSidebar();
 
   return (
-    <Sidebar>
+    <Sidebar className="border-none">
       <SidebarContent className="p-2">
         <SidebarGroup>
           <div
