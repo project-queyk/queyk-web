@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
@@ -24,7 +25,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 const items = [
   {
