@@ -37,14 +37,14 @@ const items = [
     icon: MapPin,
   },
   {
-    title: "User Manual",
-    url: "/user-manual",
-    icon: BookOpen,
-  },
-  {
     title: "Protocols",
     url: "/protocols",
     icon: ClipboardList,
+  },
+  {
+    title: "User Manual",
+    url: "/user-manual",
+    icon: BookOpen,
   },
 ];
 
