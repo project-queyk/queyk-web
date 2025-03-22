@@ -8,7 +8,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <AppSidebar />
       <main>
         <Header />
-        {children}
+        <div className="mx-4 mb-4">{children}</div>
       </main>
     </SidebarProvider>
   );
