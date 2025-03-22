@@ -24,6 +24,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const items = [
   {
@@ -107,10 +108,10 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <a href="#" className="flex items-center gap-2 py-6 pl-2">
+              <Link href="/" className="flex items-center gap-2 py-6 pl-2">
                 <LogOutIcon size={64} />
                 <span className="mb-[1px] font-medium">Logout</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
