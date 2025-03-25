@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { useSearchParams } from "next/navigation";
 
@@ -9,6 +10,25 @@ import { signInAction } from "@/lib/auth-actions";
 import { Button } from "@/components/ui/button";
 
 export default function AuthErrorPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-6 my-80 grid items-center justify-center gap-2 md:gap-3">
+          <h5 className="text-3xl font-bold md:text-4xl">
+            Something went wrong
+          </h5>
+          <p className="text-muted-foreground text-sm font-medium text-balance break-words md:text-base">
+            Loading error details...
+          </p>
+        </div>
+      }
+    >
+      <ErrorContent />
+    </Suspense>
+  );
+}
+
+function ErrorContent() {
   const search = useSearchParams();
   const error = search.get("error");
 
