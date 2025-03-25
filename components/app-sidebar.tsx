@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
@@ -11,6 +10,8 @@ import {
   MapPin,
   PanelLeftIcon,
 } from "lucide-react";
+
+import { signOutAction } from "@/lib/auth-actions";
 
 import {
   Sidebar,
@@ -108,10 +109,13 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link href="/" className="flex items-center gap-2 py-6 pl-2">
+              <button
+                onClick={signOutAction}
+                className="h-full cursor-pointer py-3"
+              >
                 <LogOutIcon size={64} />
                 <span className="mb-[1px] font-medium">Logout</span>
-              </Link>
+              </button>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
