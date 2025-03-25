@@ -109,7 +109,10 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <button onClick={signOutAction} className="h-full py-3">
+              <button
+                onClick={signOutAction}
+                className="h-full cursor-pointer py-3"
+              >
                 <LogOutIcon size={64} />
                 <span className="mb-[1px] font-medium">Logout</span>
               </button>
