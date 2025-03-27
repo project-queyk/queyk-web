@@ -59,9 +59,7 @@ export function AppSidebar() {
     <Sidebar className="border-none">
       <SidebarContent className="p-2">
         <SidebarGroup>
-          <div
-            className={`mb-6 flex items-center ${isMobile ? "gap-12" : "gap-10"}`}
-          >
+          <div className="mb-6 flex items-center justify-between">
             <Button
               onClick={toggleSidebar}
               variant="ghost"
@@ -85,6 +83,7 @@ export function AppSidebar() {
                 Queyk
               </SidebarGroupLabel>
             </div>
+            <div className="size-5"></div>
           </div>
           <SidebarGroupContent>
             <SidebarMenu>
