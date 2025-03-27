@@ -138,7 +138,7 @@ export default function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
           </motion.span>
         </motion.h1>
         <motion.p
-          className="text-muted-foreground text-sm font-medium md:text-center md:text-base"
+          className="text-muted-foreground text-center text-sm font-medium md:text-base"
           initial="hidden"
           animate="visible"
           variants={fadeIn}
@@ -150,10 +150,19 @@ export default function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.6 }}
-          className="mt-2"
+          className="mt-2 flex gap-2"
         >
           <Button className="cursor-pointer font-semibold" asChild>
             <Link href="/dashboard">Get started</Link>
+          </Button>
+          <Button
+            className="cursor-pointer font-semibold"
+            variant="outline"
+            asChild
+          >
+            <a href="https://github.com/project-queyk" target="_blank">
+              View on GitHub
+            </a>
           </Button>
         </motion.div>
       </main>
