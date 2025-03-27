@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
+  AlignLeft,
   BookOpen,
   ClipboardList,
   LayoutDashboard,
@@ -67,7 +68,11 @@ export function AppSidebar() {
               size="icon"
               className="hover:bg-sidebar-accent size-6 cursor-pointer"
             >
-              <PanelLeftIcon className="text-primary-foreground size-5 transition-colors hover:text-white" />
+              {isMobile ? (
+                <AlignLeft className="text-primary-foreground size-5 transition-colors hover:text-white" />
+              ) : (
+                <PanelLeftIcon className="text-primary-foreground size-5 transition-colors hover:text-white" />
+              )}
             </Button>
             <div className="flex items-center">
               <Image
