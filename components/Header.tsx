@@ -9,7 +9,7 @@ export default function Header() {
   const segments = pathname.split("/").filter(Boolean);
 
   return (
-    <header className="flex items-center gap-2 p-5">
+    <header className="flex gap-2 p-5">
       <SidebarTrigger className="size-6 hover:bg-zinc-200" />
       {segments.length === 0 ? (
         <span className="font-medium">Home</span>
