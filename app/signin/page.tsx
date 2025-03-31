@@ -27,21 +27,21 @@ export default async function Page() {
           <p className="mb-0.5 text-xl font-semibold">Queyk</p>
         </Link>
       </header>
-      <main className="mx-6 my-80 grid items-center justify-center gap-4">
+      <main className="mx-6 grid min-h-[85dvh] items-center justify-center gap-4">
         <div className="grid gap-2">
           <h1 className="text-3xl font-bold md:text-4xl">Welcome back!</h1>
           <p className="text-muted-foreground text-sm font-medium md:text-base">
             Access your school&apos;s earthquake monitoring system.
           </p>
+          <Button
+            onClick={signInAction}
+            className="mt-2 w-full cursor-pointer gap-3 font-semibold"
+            size="lg"
+          >
+            <FaGoogle className="size-4" />
+            Sign in with Google
+          </Button>
         </div>
-        <Button
-          onClick={signInAction}
-          className="w-full cursor-pointer gap-3 font-semibold"
-          size="lg"
-        >
-          <FaGoogle className="size-4" />
-          Sign in with Google
-        </Button>
       </main>
     </>
   );

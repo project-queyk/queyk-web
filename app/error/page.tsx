@@ -14,7 +14,7 @@ export default function AuthErrorPage() {
   return (
     <Suspense
       fallback={
-        <div className="mx-6 my-80 grid items-center justify-center gap-2 md:gap-3">
+        <div className="mx-6 grid min-h-[85dvh] items-center justify-center gap-2 md:gap-3">
           <h5 className="text-3xl font-bold md:text-4xl">
             Something went wrong
           </h5>
@@ -47,86 +47,90 @@ function ErrorContent() {
           <p className="mb-0.5 text-xl font-semibold">Queyk</p>
         </Link>
       </header>
-      <div className="mx-6 my-80 grid items-center justify-center gap-2 md:gap-3">
-        <h5 className="text-3xl font-bold md:text-4xl">Something went wrong</h5>
-        {error === "AccessDenied" && (
-          <>
-            <p className="text-muted-foreground text-sm font-medium text-balance break-words md:text-base">
-              Access restricted. You must use your official Immaculada
-              Concepcion College email to sign in.
-            </p>
-            <Button
-              onClick={signInAction}
-              className="mt-2 cursor-pointer gap-3 font-semibold"
-              size="lg"
-            >
-              <FaGoogle className="size-4" />
-              Sign in with Google
-            </Button>
-          </>
-        )}
-
-        {error === "Verification" && (
-          <>
-            <p className="text-muted-foreground text-sm font-medium text-balance break-words md:text-base">
-              We couldn&apos;t verify your email address. Please check your
-              inbox for a verification email or try signing in again.
-            </p>
-            <div className="mt-2 grid gap-3">
+      <div className="mx-6 grid min-h-[85dvh] items-center justify-center gap-2 md:gap-3">
+        <div className="grid gap-2">
+          <h5 className="text-3xl font-bold md:text-4xl">
+            Something went wrong
+          </h5>
+          {error === "AccessDenied" && (
+            <>
+              <p className="text-muted-foreground text-sm font-medium text-balance break-words md:text-base">
+                Access restricted. You must use your official Immaculada
+                Concepcion College email to sign in.
+              </p>
               <Button
                 onClick={signInAction}
-                className="cursor-pointer gap-3 font-semibold"
+                className="mt-2 cursor-pointer gap-3 font-semibold"
                 size="lg"
               >
                 <FaGoogle className="size-4" />
                 Sign in with Google
               </Button>
-              <Button
-                asChild
-                variant="outline"
-                className="cursor-pointer font-semibold"
-                size="lg"
-              >
-                <Link href="/">Go to Home</Link>
-              </Button>
-            </div>
-          </>
-        )}
+            </>
+          )}
 
-        {error === "Configuration" && (
-          <>
-            <p className="text-muted-foreground text-sm font-medium text-balance break-words md:text-base">
-              There&apos;s an issue with the authentication service. Please try
-              again later or contact support.
-            </p>
-            <Button
-              asChild
-              className="mt-2 cursor-pointer font-semibold"
-              size="lg"
-            >
-              <Link href="/">Return to Home</Link>
-            </Button>
-          </>
-        )}
-
-        {!error ||
-          (error !== "AccessDenied" &&
-            error !== "Verification" &&
-            error !== "Configuration" && (
-              <>
-                <p className="text-muted-foreground text-sm font-medium text-balance break-words md:text-base">
-                  An unexpected error occurred. Please try again or contact
-                  support if the problem persists.
-                </p>
+          {error === "Verification" && (
+            <>
+              <p className="text-muted-foreground text-sm font-medium text-balance break-words md:text-base">
+                We couldn&apos;t verify your email address. Please check your
+                inbox for a verification email or try signing in again.
+              </p>
+              <div className="mt-2 grid gap-3">
+                <Button
+                  onClick={signInAction}
+                  className="cursor-pointer gap-3 font-semibold"
+                  size="lg"
+                >
+                  <FaGoogle className="size-4" />
+                  Sign in with Google
+                </Button>
                 <Button
                   asChild
-                  className="mt-2 cursor-pointer font-semibold"
+                  variant="outline"
+                  className="cursor-pointer font-semibold"
                   size="lg"
                 >
                   <Link href="/">Go to Home</Link>
                 </Button>
-              </>
-            ))}
+              </div>
+            </>
+          )}
+
+          {error === "Configuration" && (
+            <>
+              <p className="text-muted-foreground text-sm font-medium text-balance break-words md:text-base">
+                There&apos;s an issue with the authentication service. Please
+                try again later or contact support.
+              </p>
+              <Button
+                asChild
+                className="mt-2 cursor-pointer font-semibold"
+                size="lg"
+              >
+                <Link href="/">Return to Home</Link>
+              </Button>
+            </>
+          )}
+
+          {!error ||
+            (error !== "AccessDenied" &&
+              error !== "Verification" &&
+              error !== "Configuration" && (
+                <>
+                  <p className="text-muted-foreground text-sm font-medium text-balance break-words md:text-base">
+                    An unexpected error occurred. Please try again or contact
+                    support if the problem persists.
+                  </p>
+                  <Button
+                    asChild
+                    className="mt-2 cursor-pointer font-semibold"
+                    size="lg"
+                  >
+                    <Link href="/">Go to Home</Link>
+                  </Button>
+                </>
+              ))}
+        </div>
       </div>
     </>
   );

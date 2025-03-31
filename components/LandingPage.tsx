@@ -109,7 +109,7 @@ export default function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
           </Button>
         )}
       </motion.header>
-      <main className="mx-6 my-64 flex flex-col items-center justify-center gap-2 md:mx-24 md:gap-3">
+      <main className="mx-6 flex min-h-[85dvh] flex-col items-center justify-center gap-2 md:mx-24 md:gap-3">
         <motion.h1
           className="flex flex-wrap gap-x-2 text-3xl font-semibold md:text-5xl"
           variants={container}
