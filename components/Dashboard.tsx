@@ -72,8 +72,8 @@ export default function Dashboard({
   return (
     <div className="grid gap-3">
       <Card>
-        <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
-          <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-2 sm:py-3">
+        <CardHeader className="mx-4.5 flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
+          <div className="flex flex-1 flex-col justify-center gap-1 px-1.5 pt-2">
             <CardTitle>Seismic Activity Monitor</CardTitle>
             <CardDescription>
               Hourly earthquake readings for today
