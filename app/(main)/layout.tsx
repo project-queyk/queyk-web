@@ -17,7 +17,7 @@ export default async function Layout({
 
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar session={session} />
       <main className="w-full">
         <Header />
         <div className="mx-5 mb-5">{children}</div>

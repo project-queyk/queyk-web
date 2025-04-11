@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Session } from "next-auth";
 import { usePathname } from "next/navigation";
 import {
   AlignLeft,
@@ -27,6 +28,11 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 const items = [
   {
@@ -51,7 +57,7 @@ const items = [
   },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ session }: { session: Session }) {
   const pathname = usePathname();
   const { toggleSidebar, isMobile } = useSidebar();
 
@@ -112,15 +118,45 @@ export function AppSidebar() {
       <SidebarFooter className="p-3">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <button
-                onClick={signOutAction}
-                className="h-full cursor-pointer py-3"
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton className="flex h-full w-full cursor-pointer items-center gap-2 py-3">
+                  <Image
+                    src={session.user?.image ?? ""}
+                    alt={`${session.user?.name}'s profile image`}
+                    width={50}
+                    height={50}
+                    className="size-8 rounded-full"
+                  />
+                  <div className="w-full overflow-hidden">
+                    <p className="overflow-hidden text-sm font-bold text-ellipsis whitespace-nowrap">
+                      {session.user?.name}
+                    </p>
+                    <p className="text-muted overflow-hidden text-xs font-medium text-ellipsis whitespace-nowrap">
+                      {session.user?.email}
+                    </p>
+                  </div>
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="top"
+                className="border-sidebar-border text-sidebar-foreground w-full bg-[#17335d] p-0"
               >
-                <LogOutIcon size={64} />
-                <span className="mb-[1px] font-medium">Logout</span>
-              </button>
-            </SidebarMenuButton>
+                <SidebarMenu className="hover:bg-sidebar">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <button
+                        onClick={signOutAction}
+                        className="h-full cursor-pointer py-3"
+                      >
+                        <LogOutIcon size={64} />
+                        <span className="mb-[1px] font-medium">Logout</span>
+                      </button>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
