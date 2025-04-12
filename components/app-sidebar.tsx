@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   AlignLeft,
   BookOpen,
+  ChevronsUpDown,
   ClipboardList,
   LayoutDashboard,
   LogOutIcon,
@@ -136,10 +137,11 @@ export function AppSidebar({ session }: { session: Session }) {
                       {session.user?.email}
                     </p>
                   </div>
+                  <ChevronsUpDown className="ml-auto size-4" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                side="top"
+                side="right"
                 className="border-sidebar-border text-sidebar-foreground w-full bg-[#17335d] p-0"
               >
                 <SidebarMenu className="hover:bg-sidebar">
