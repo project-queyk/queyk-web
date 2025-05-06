@@ -22,7 +22,7 @@ export default async function Page() {
             width={25}
             height={25}
             alt="queyk's logo"
-            className="invert"
+            className="size-5 invert md:size-6"
           />
           <p className="mb-0.5 text-xl font-semibold">Queyk</p>
         </Link>
