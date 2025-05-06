@@ -79,8 +79,9 @@ export function AppSidebar({ session }: { session: Session }) {
                 width={25}
                 height={25}
                 alt="queyk's logo"
+                className="size-4.5 md:size-5.5"
               />
-              <SidebarGroupLabel className="text-background mb-0.5 -ml-1 text-xl font-semibold">
+              <SidebarGroupLabel className="text-background mb-0.5 -ml-1 text-base font-semibold md:text-xl">
                 Queyk
               </SidebarGroupLabel>
             </div>

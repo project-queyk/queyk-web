@@ -113,7 +113,7 @@ export default function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
             width={25}
             height={25}
             alt="queyk's logo"
-            className="size-5 invert md:size-6"
+            className="size-4.5 invert md:size-5.5"
           />
           <p className="mb-0.5 font-semibold md:text-xl">Queyk</p>
         </Link>

@@ -22,9 +22,9 @@ export default async function Page() {
             width={25}
             height={25}
             alt="queyk's logo"
-            className="size-5 invert md:size-6"
+            className="size-4.5 invert md:size-5.5"
           />
-          <p className="mb-0.5 text-xl font-semibold">Queyk</p>
+          <p className="mb-0.5 font-semibold md:text-xl">Queyk</p>
         </Link>
       </header>
       <main className="mx-6 grid min-h-[85dvh] items-center justify-center gap-4">
