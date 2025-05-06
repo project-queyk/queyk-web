@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import {
   AlignLeft,
   BookOpen,
-  ChevronsUpDown,
   ClipboardList,
   LayoutDashboard,
   LogOutIcon,
@@ -29,11 +28,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
 
 const items = [
   {
@@ -119,46 +113,36 @@ export function AppSidebar({ session }: { session: Session }) {
       <SidebarFooter className="p-3">
         <SidebarMenu>
           <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="flex h-full w-full cursor-pointer items-center gap-2 py-3">
-                  <Image
-                    src={session.user?.image ?? ""}
-                    alt={`${session.user?.name}'s profile image`}
-                    width={50}
-                    height={50}
-                    className="size-8 rounded-full"
-                  />
-                  <div className="w-full overflow-hidden">
-                    <p className="overflow-hidden text-sm font-bold text-ellipsis whitespace-nowrap">
-                      {session.user?.name}
-                    </p>
-                    <p className="text-muted overflow-hidden text-xs font-medium text-ellipsis whitespace-nowrap">
-                      {session.user?.email}
-                    </p>
-                  </div>
-                  <ChevronsUpDown className="ml-auto size-4" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="right"
-                className="border-sidebar-border text-sidebar-foreground w-full bg-[#17335d] p-0"
+            <div className="flex h-full w-full items-center gap-2 py-3">
+              <Image
+                src={session.user?.image ?? ""}
+                alt={`${session.user?.name}'s profile image`}
+                width={50}
+                height={50}
+                className="size-8 rounded-full"
+              />
+              <div className="w-full overflow-hidden">
+                <p className="overflow-hidden text-sm font-bold text-ellipsis whitespace-nowrap">
+                  {session.user?.name}
+                </p>
+                <p className="text-muted overflow-hidden text-xs font-medium text-ellipsis whitespace-nowrap">
+                  {session.user?.email}
+                </p>
+              </div>
+            </div>
+          </SidebarMenuItem>
+        </SidebarMenu>
+        <SidebarMenu className="hover:bg-sidebar">
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <button
+                onClick={signOutAction}
+                className="h-full cursor-pointer py-3"
               >
-                <SidebarMenu className="hover:bg-sidebar">
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      <button
-                        onClick={signOutAction}
-                        className="h-full cursor-pointer py-3"
-                      >
-                        <LogOutIcon size={64} />
-                        <span className="mb-[1px] font-medium">Logout</span>
-                      </button>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                <LogOutIcon size={64} />
+                <span className="mb-[1px] font-medium">Logout</span>
+              </button>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
