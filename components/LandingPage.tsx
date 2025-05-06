@@ -113,9 +113,9 @@ export default function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
             width={25}
             height={25}
             alt="queyk's logo"
-            className="invert"
+            className="size-5 invert md:size-6"
           />
-          <p className="mb-0.5 text-xl font-semibold">Queyk</p>
+          <p className="mb-0.5 font-semibold md:text-xl">Queyk</p>
         </Link>
         {!isLoggedIn && (
           <Button className="cursor-pointer font-semibold">
