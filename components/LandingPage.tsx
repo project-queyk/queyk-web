@@ -84,6 +84,20 @@ const headerAnimation = {
   },
 };
 
+const heroImageAnimation = {
+  hidden: { opacity: 0, y: 40, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      delay: 1.3,
+      duration: 0.8,
+      ease: "easeOut",
+    },
+  },
+};
+
 export default function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
     <>
@@ -109,7 +123,7 @@ export default function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
           </Button>
         )}
       </motion.header>
-      <main className="mx-6 flex min-h-[85dvh] flex-col items-center justify-center gap-2 md:mx-24 md:gap-3">
+      <main className="mx-6 flex min-h-[90dvh] flex-col items-center justify-center gap-2 md:mx-24 md:min-h-[110dvh] md:gap-3">
         <motion.h1
           className="flex flex-wrap gap-x-2 text-3xl font-semibold md:text-5xl"
           variants={container}
@@ -164,6 +178,50 @@ export default function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
               View on GitHub
             </a>
           </Button>
+        </motion.div>
+        <motion.div
+          variants={heroImageAnimation}
+          initial="hidden"
+          animate="visible"
+          className="mt-10 w-full max-w-5xl perspective-[1000px]"
+          style={{
+            transformStyle: "preserve-3d",
+          }}
+        >
+          <motion.div
+            initial={{ y: 0, rotateX: 0, scale: 1 }}
+            whileInView={{
+              y: -25,
+              rotateX: 3.5,
+              scale: 1.05,
+              transition: {
+                type: "spring",
+                damping: 15,
+                stiffness: 100,
+              },
+            }}
+            viewport={{ once: false, amount: 0.8 }}
+            className="w-full"
+          >
+            <div className="hidden md:block">
+              <Image
+                src="/queyk-hero.png"
+                alt="queyk dashboard hero image"
+                width={1920}
+                height={1080}
+                className="h-full w-full rounded-lg shadow-xl"
+              />
+            </div>
+            <div className="mt-4 block md:hidden">
+              <Image
+                src="/queyk-hero-small.png"
+                alt="queyk dashboard hero image"
+                width={1080}
+                height={1080}
+                className="rounded-lg shadow-xl"
+              />
+            </div>
+          </motion.div>
         </motion.div>
       </main>
     </>
