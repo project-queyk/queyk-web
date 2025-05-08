@@ -224,6 +224,18 @@ export default function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
           </motion.div>
         </motion.div>
       </main>
+      <motion.footer
+        className="py-8 text-center text-sm text-gray-500"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          delay: 1.8,
+          duration: 0.7,
+          ease: "easeOut",
+        }}
+      >
+        <p>© {new Date().getFullYear()} Queyk Project - All Rights Reserved</p>
+      </motion.footer>
     </>
   );
 }
