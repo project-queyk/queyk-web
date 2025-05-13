@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Activity, MapPin, Shield } from "lucide-react";
+import { Activity, ChevronRight, MapPin, Shield } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -241,7 +241,7 @@ export default function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6 }}
             >
-              <h2 className="text-2xl font-semibold text-balance lg:text-4xl">
+              <h2 className="text-2xl font-semibold text-balance md:text-4xl">
                 Complete earthquake preparedness for your school
               </h2>
               <p className="text-muted-foreground mt-4 text-sm md:text-base">
@@ -319,6 +319,47 @@ export default function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
                 </CardContent>
               </motion.div>
             </Card>
+          </div>
+        </section>
+        <section className="py-16 md:py-32">
+          <div className="mx-auto max-w-5xl px-6">
+            <motion.div
+              className="grid gap-6 md:grid-cols-2 md:gap-12"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.7 }}
+            >
+              <h2 className="text-2xl font-medium md:text-4xl">
+                Every second counts when earthquakes strike schools
+              </h2>
+              <div className="space-y-6 text-sm md:text-base">
+                <p>
+                  Schools face unique challenges during earthquakes, with large
+                  numbers of students and staff needing to respond quickly in
+                  complex campus environments.
+                </p>
+                <p>
+                  <span className="font-bold">
+                    Proper preparation saves lives
+                  </span>{" "}
+                  — studies show that schools with comprehensive earthquake
+                  monitoring and response systems can reduce injury rates by up
+                  to 70% during seismic events.
+                </p>
+                <Button
+                  asChild
+                  variant="secondary"
+                  size="sm"
+                  className="gap-1 pr-1.5"
+                >
+                  <Link href="/protocols">
+                    <span>View Safety Resources</span>
+                    <ChevronRight className="size-2" />
+                  </Link>
+                </Button>
+              </div>
+            </motion.div>
           </div>
         </section>
       </main>
