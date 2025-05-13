@@ -362,6 +362,37 @@ export default function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
             </motion.div>
           </div>
         </section>
+        <section className="py-16 md:py-32">
+          <div className="mx-auto max-w-5xl px-6">
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-2xl font-semibold text-balance md:text-4xl">
+                Protect Your School Today
+              </h2>
+              <p className="text-muted-foreground mt-4 text-sm md:text-base">
+                Take the next step toward comprehensive earthquake preparedness
+                for your campus
+              </p>
+              <div className="mt-6 flex flex-wrap justify-center gap-4">
+                <Button asChild size="lg">
+                  <Link href="/dashboard">
+                    <span>Access Dashboard</span>
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <Link href="/protocols">
+                    <span>View Safety Protocols</span>
+                  </Link>
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        </section>
       </main>
       <motion.footer
         className="py-8 text-center text-sm text-gray-500"
