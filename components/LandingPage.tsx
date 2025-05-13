@@ -3,11 +3,29 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Session } from "next-auth";
 import { motion } from "framer-motion";
-import { Activity, ChevronRight, MapPin, Shield } from "lucide-react";
+import {
+  Activity,
+  ChevronRight,
+  LayoutDashboard,
+  LogOut,
+  MapPin,
+  Shield,
+} from "lucide-react";
+
+import { signOutRootAction } from "@/lib/auth-actions";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const textPart1 = "Is your school prepared for an";
 const earthquakeWord = "earthquake?";
@@ -101,7 +119,7 @@ const heroImageAnimation = {
   },
 };
 
-export default function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
+export default function LandingPage({ session }: { session: Session | null }) {
   return (
     <>
       <motion.header
@@ -120,7 +138,47 @@ export default function LandingPage({ isLoggedIn }: { isLoggedIn: boolean }) {
           />
           <p className="mb-0.5 font-semibold md:text-xl">Queyk</p>
         </Link>
-        {!isLoggedIn && (
+        {session ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="cursor-pointer rounded-full"
+              >
+                <Image
+                  src={session.user?.image ?? ""}
+                  alt={session.user?.name ?? ""}
+                  width={35}
+                  height={35}
+                  className="rounded-full"
+                />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="mr-4 w-56">
+              <DropdownMenuGroup>
+                <DropdownMenuItem>
+                  <Link
+                    href="/dashboard"
+                    className="flex w-full cursor-default items-center gap-2"
+                  >
+                    <LayoutDashboard />
+                    Dashboard
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <button
+                  onClick={signOutRootAction}
+                  className="flex w-full items-center gap-2"
+                >
+                  <LogOut /> Log out
+                </button>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
           <Button className="cursor-pointer font-semibold">
             <Link href="/dashboard">Sign in</Link>
           </Button>

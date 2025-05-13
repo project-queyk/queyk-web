@@ -9,3 +9,7 @@ export async function signInAction() {
 export async function signOutAction() {
   await signOut({ redirectTo: "/signin" });
 }
+
+export async function signOutRootAction() {
+  await signOut({ redirectTo: "/" });
+}

@@ -141,7 +141,7 @@ export function AppSidebar({ session }: { session: Session }) {
                 className="h-full cursor-pointer py-3"
               >
                 <LogOutIcon size={64} />
-                <span className="mb-[1px] font-medium">Logout</span>
+                <span className="mb-[1px] font-medium">Log out</span>
               </button>
             </SidebarMenuButton>
           </SidebarMenuItem>
