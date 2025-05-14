@@ -463,7 +463,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
                     <Image
                       className="h-96 w-full rounded-md object-cover object-top grayscale transition-all duration-500 group-hover:h-[22.5rem] group-hover:rounded-xl hover:grayscale-0"
                       src={member.avatar}
-                      alt="team member"
+                      alt={member.name}
                       width="826"
                       height="1239"
                     />
