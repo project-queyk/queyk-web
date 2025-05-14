@@ -188,7 +188,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
       <main>
         <section className="mx-6 flex min-h-[90dvh] flex-col items-center justify-center gap-2 md:mx-24 md:min-h-[110dvh] md:gap-3">
           <motion.h1
-            className="flex flex-wrap gap-x-2 text-2xl font-semibold md:text-5xl"
+            className="flex flex-wrap justify-center gap-x-2 text-2xl font-semibold md:text-5xl"
             variants={container}
             initial="hidden"
             animate="visible"
