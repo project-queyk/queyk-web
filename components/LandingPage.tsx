@@ -14,6 +14,7 @@ import {
   Shield,
 } from "lucide-react";
 
+import { members } from "@/lib/members";
 import { signOutRootAction } from "@/lib/auth-actions";
 
 import { Button } from "@/components/ui/button";
@@ -319,12 +320,10 @@ export default function LandingPage({ session }: { session: Session | null }) {
                   <CardDecorator>
                     <Activity className="size-6" aria-hidden />
                   </CardDecorator>
-
                   <h3 className="mt-6 font-medium">
                     Seismic Activity Tracking
                   </h3>
                 </CardHeader>
-
                 <CardContent>
                   <p className="text-sm">
                     View hourly magnitude readings, track peak activity periods,
@@ -388,7 +387,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.7 }}
             >
-              <h2 className="text-2xl font-medium md:text-4xl">
+              <h2 className="text-2xl font-semibold md:text-4xl">
                 Every second counts when earthquakes strike schools
               </h2>
               <div className="space-y-6 text-sm md:text-base">
@@ -416,6 +415,72 @@ export default function LandingPage({ session }: { session: Session | null }) {
                     <ChevronRight className="size-2" />
                   </Link>
                 </Button>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+        <section className="py-16 md:py-32 dark:bg-transparent">
+          <div className="mx-auto max-w-5xl px-6">
+            <motion.div
+              className="mt-12 gap-4 sm:grid sm:grid-cols-2 md:mt-24"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.7 }}
+            >
+              <div className="sm:w-2/5">
+                <h2 className="text-2xl font-semibold md:text-4xl">Our team</h2>
+              </div>
+              <div className="mt-6 text-sm sm:mt-0 md:text-base">
+                <p>
+                  Our team is dedicated to developing tools that help your
+                  school prepare for earthquake events. We combine educational
+                  safety knowledge with user-friendly technology to make
+                  emergency planning more accessible.
+                </p>
+              </div>
+            </motion.div>
+            <motion.div
+              className="mt-12 md:mt-24"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+                {members.map((member, index) => (
+                  <motion.div
+                    key={index}
+                    className="group overflow-hidden"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{
+                      duration: 0.5,
+                      delay: 0.1 * index,
+                    }}
+                  >
+                    <Image
+                      className="h-96 w-full rounded-md object-cover object-top grayscale transition-all duration-500 group-hover:h-[22.5rem] group-hover:rounded-xl hover:grayscale-0"
+                      src={member.avatar}
+                      alt="team member"
+                      width="826"
+                      height="1239"
+                    />
+                    <div className="px-2 pt-2 sm:pt-4 sm:pb-0">
+                      <div className="flex justify-between">
+                        <h3 className="text-title text-base font-medium transition-all duration-500 group-hover:tracking-wider">
+                          {member.name}
+                        </h3>
+                      </div>
+                      <div className="mt-1 flex items-center justify-between">
+                        <span className="text-muted-foreground inline-block translate-y-6 text-sm opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                          {member.role}
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
           </div>
