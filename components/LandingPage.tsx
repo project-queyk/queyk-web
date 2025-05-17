@@ -518,7 +518,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
         </section>
       </main>
       <motion.footer
-        className="py-8 text-center text-sm text-gray-500"
+        className="py-8 text-center text-xs text-gray-500 md:text-sm"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{

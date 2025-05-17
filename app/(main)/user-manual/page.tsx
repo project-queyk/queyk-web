@@ -131,8 +131,8 @@ export default function Page() {
           </CardContent>
         </Card>
       ))}
-      <div className="text-muted-foreground mt-2 text-center text-xs italic">
-        Queyk © {new Date().getFullYear()}
+      <div className="text-muted-foreground mt-2 text-center text-xs md:text-sm">
+        © {new Date().getFullYear()} Queyk Project - All Rights Reserved
       </div>
     </div>
   );

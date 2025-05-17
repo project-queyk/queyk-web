@@ -45,7 +45,7 @@ export default function Page() {
           </Link>
         </Button>
       </div>
-      <div className="text-muted-foreground mt-2 text-center text-xs italic">
+      <div className="text-muted-foreground mt-2 text-center text-xs md:text-sm">
         Based on guidelines from NDRRMC, PHIVOLCS, and the Philippine Disaster
         Risk Reduction and Management Act (RA 10121)
       </div>
