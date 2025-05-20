@@ -142,7 +142,7 @@ export default function Page() {
             {safetyGuidelines.bulletItems.map((bullet) => (
               <div className="flex flex-col gap-2" key={bullet.title}>
                 <h3 className="text-primary font-semibold">{bullet.title}</h3>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-muted-foreground text-sm whitespace-pre-line">
                   {bullet.description}
                 </p>
               </div>
