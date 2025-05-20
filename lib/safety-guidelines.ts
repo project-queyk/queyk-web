@@ -24,7 +24,8 @@ export const safetyGuidelines = {
     },
     {
       title: "Emergency Contacts",
-      description: "NDRRMC Hotline: (02) 8911-1406\nPHIVOLCS: (02) 8426-1468",
+      description:
+        "School Clinic: 09755721421\nSchool Security: 09569114566\nFacilities Management: 09460548474",
     },
     {
       title: "After an Earthquake",
