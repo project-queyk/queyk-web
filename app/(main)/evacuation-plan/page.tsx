@@ -102,9 +102,14 @@ export default function Page() {
           Floor plans with evacuation routes and assembly points in case of an
           earthquake
         </p>
-        <Button variant="outline" size="sm" className="h-8">
-          <Download className="mr-2 h-4 w-4" />
-          Download PDF
+        <Button variant="outline" size="sm" className="h-8" asChild>
+          <a
+            href="/documents/evacuation-plan.pdf"
+            download="Queyk-Evacuation-Plan.pdf"
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Download PDF
+          </a>
         </Button>
       </div>
       <Card className="w-full">
