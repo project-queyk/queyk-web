@@ -84,7 +84,7 @@ export default function Dashboard({
     <div className="grid gap-3">
       <div className="items-center justify-between md:flex">
         <DatePickerWithRange date={date} onDateChange={setDate} />
-        <Button className="mt-2 ml-auto hidden md:flex">
+        <Button className="hidden gap-2 md:flex">
           <FileChartColumnIncreasing />
           Generate Report
         </Button>
@@ -208,8 +208,8 @@ export default function Dashboard({
           </CardHeader>
         </Card>
         <div className="flex w-full justify-center md:hidden">
-          <Button className="mt-2">
-            <FileChartColumnIncreasing className="mr-2" />
+          <Button className="flex gap-2">
+            <FileChartColumnIncreasing />
             Generate Report
           </Button>
         </div>
