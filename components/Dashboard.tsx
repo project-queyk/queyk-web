@@ -1,7 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { DateRange } from "react-day-picker";
+import { FileChartColumnIncreasing } from "lucide-react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
+
+import { formatSeismicMonitorDate } from "@/lib/utils";
 
 import {
   Card,
@@ -16,6 +20,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Button } from "@/components/ui/button";
+import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
 
 const chartConfig = {
   activity: {
@@ -69,14 +75,26 @@ export default function Dashboard({
     };
   }, [chartData]);
 
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: new Date(),
+    to: new Date(),
+  });
+
   return (
     <div className="grid gap-3">
+      <div className="items-center justify-between md:flex">
+        <DatePickerWithRange date={date} onDateChange={setDate} />
+        <Button className="mt-2 ml-auto hidden md:flex">
+          <FileChartColumnIncreasing />
+          Generate Report
+        </Button>
+      </div>
       <Card>
         <CardHeader className="mx-4.5 flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
           <div className="flex flex-1 flex-col justify-center gap-1 px-1.5 pt-2">
             <CardTitle>Seismic Activity Monitor</CardTitle>
             <CardDescription>
-              Hourly earthquake readings for today
+              {formatSeismicMonitorDate(date)} earthquake readings
             </CardDescription>
           </div>
         </CardHeader>
@@ -124,7 +142,7 @@ export default function Dashboard({
         <Card className="w-full">
           <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
             <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
-              <CardTitle>Today&apos;s Peak Magnitude</CardTitle>
+              <CardTitle>Peak Magnitude</CardTitle>
               <CardDescription>
                 <span className="text-primary text-2xl font-semibold">
                   {peakMagnitude.value.toFixed(1)}
@@ -134,7 +152,7 @@ export default function Dashboard({
                 </span>
               </CardDescription>
               <p className="text-muted-foreground mt-1 text-xs">
-                Highest intensity reading recorded today
+                Strongest seismic event detected during the selected time period
               </p>
             </div>
           </CardHeader>
@@ -142,14 +160,15 @@ export default function Dashboard({
         <Card className="w-full">
           <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
             <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
-              <CardTitle>Today&apos;s Average Magnitude</CardTitle>
+              <CardTitle> Average Magnitude</CardTitle>
               <CardDescription>
                 <span className="text-primary text-2xl font-semibold">
                   {avgMagnitude}
                 </span>
               </CardDescription>
               <p className="text-muted-foreground mt-1 text-xs">
-                Baseline seismic activity level for today
+                Mean seismic intensity across all readings for the selected
+                timeframe
               </p>
             </div>
           </CardHeader>
@@ -188,6 +207,12 @@ export default function Dashboard({
             </div>
           </CardHeader>
         </Card>
+        <div className="flex w-full justify-center md:hidden">
+          <Button className="mt-2">
+            <FileChartColumnIncreasing className="mr-2" />
+            Generate Report
+          </Button>
+        </div>
       </div>
     </div>
   );
