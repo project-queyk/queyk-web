@@ -1,11 +1,8 @@
 "use client";
 
-import { Button, buttonVariants } from "@/components/ui/button";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
+import * as React from "react";
 import { differenceInCalendarDays } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import * as React from "react";
 import {
   DayPicker,
   labelNext,
@@ -13,6 +10,10 @@ import {
   useDayPicker,
   type DayPickerProps,
 } from "react-day-picker";
+
+import { cn } from "@/lib/utils";
+
+import { Button, buttonVariants } from "@/components/ui/button";
 
 export type CalendarProps = DayPickerProps & {
   /**
@@ -62,7 +63,7 @@ type NavView = "days" | "years";
 function Calendar({
   className,
   showOutsideDays = true,
-  showYearSwitcher = true,
+  showYearSwitcher = false,
   yearRange = 12,
   numberOfMonths,
   ...props
@@ -85,10 +86,7 @@ function Calendar({
 
   const columnsDisplayed = navView === "years" ? 1 : numberOfMonths;
 
-  const _monthsClassName = cn(
-    "relative flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0",
-    props.monthsClassName,
-  );
+  const _monthsClassName = cn("relative flex", props.monthsClassName);
   const _monthCaptionClassName = cn(
     "relative mx-10 flex h-7 items-center justify-center",
     props.monthCaptionClassName,
@@ -168,17 +166,12 @@ function Calendar({
   );
   const _hiddenClassName = cn("invisible flex-1", props.hiddenClassName);
 
-  const isMobile = useIsMobile();
-
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       style={{
-        width:
-          isMobile && columnsDisplayed && columnsDisplayed > 1
-            ? "248.8px" // Single column width on mobile
-            : 248.8 * (columnsDisplayed ?? 1) + "px",
+        width: 248.8 * (columnsDisplayed ?? 1) + "px",
         maxWidth: "100%",
       }}
       classNames={{
