@@ -12,6 +12,7 @@ import {
 } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 
@@ -68,6 +69,7 @@ function Calendar({
   numberOfMonths,
   ...props
 }: CalendarProps) {
+  const isMobile = useIsMobile();
   const [navView, setNavView] = React.useState<NavView>("days");
   const [displayYears, setDisplayYears] = React.useState<{
     from: number;
@@ -86,7 +88,10 @@ function Calendar({
 
   const columnsDisplayed = navView === "years" ? 1 : numberOfMonths;
 
-  const _monthsClassName = cn("relative flex", props.monthsClassName);
+  const _monthsClassName = cn(
+    "relative flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0",
+    props.monthsClassName,
+  );
   const _monthCaptionClassName = cn(
     "relative mx-10 flex h-7 items-center justify-center",
     props.monthCaptionClassName,
@@ -171,7 +176,10 @@ function Calendar({
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       style={{
-        width: 248.8 * (columnsDisplayed ?? 1) + "px",
+        width:
+          isMobile && columnsDisplayed && columnsDisplayed > 1
+            ? "248.8px"
+            : 248.8 * (columnsDisplayed ?? 1) + "px",
         maxWidth: "100%",
       }}
       classNames={{
