@@ -1,3 +1,5 @@
+import { Metadata } from "next";
+
 import {
   Card,
   CardContent,
@@ -5,6 +7,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  title: "User Manual",
+  description:
+    "Complete guide to using the Queyk earthquake monitoring system. Learn how to navigate the dashboard, access safety protocols, view evacuation plans, and understand seismic activity data visualization features.",
+};
 
 const userManualSections = [
   {

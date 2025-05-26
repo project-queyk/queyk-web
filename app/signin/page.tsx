@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Metadata } from "next";
 import { FaGoogle } from "react-icons/fa";
 import { redirect } from "next/navigation";
 
@@ -7,6 +8,12 @@ import { auth } from "@/auth";
 import { signInAction } from "@/lib/auth-actions";
 
 import { Button } from "@/components/ui/button";
+
+export const metadata: Metadata = {
+  title: "Sign in",
+  description:
+    "Sign in to access your school's earthquake monitoring system with Google authentication.",
+};
 
 export default async function Page() {
   const session = await auth();

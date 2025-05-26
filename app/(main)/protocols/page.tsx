@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Metadata } from "next";
 import { LocateIcon } from "lucide-react";
 
 import { protocols } from "@/lib/protocols";
@@ -11,6 +12,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  title: "Protocols",
+  description:
+    "Emergency response protocols and safety guidelines for natural disasters. Access comprehensive procedures for earthquakes, floods, typhoons, and other emergencies based on NDRRMC and PHIVOLCS standards.",
+};
 
 export default function Page() {
   return (

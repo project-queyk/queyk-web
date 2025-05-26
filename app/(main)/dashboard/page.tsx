@@ -1,4 +1,12 @@
+import { Metadata } from "next";
+
 import Dashboard from "@/components/Dashboard";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description:
+    "Monitor seismic activity with comprehensive data visualization. Track earthquake magnitude and frequency patterns with date picker selection and interactive charts showing detailed hourly breakdowns.",
+};
 
 const chartData = [
   { time: "00:00", magnitude: 0.8, frequency: 2 },

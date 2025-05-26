@@ -8,8 +8,12 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Queyk",
-  description: "Open-source earthquake early warning system project.",
+  title: {
+    template: "%s | Queyk",
+    default: "Queyk",
+  },
+  description: "Open-source earthquake early warning system.",
+  metadataBase: new URL("https://queyk.vercel.app"),
 };
 
 export default function RootLayout({
