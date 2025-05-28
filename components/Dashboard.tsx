@@ -84,7 +84,10 @@ export default function Dashboard({
     <div className="grid gap-3">
       <div className="items-center justify-between md:flex">
         <DatePickerWithRange date={date} onDateChange={setDate} />
-        <Button className="hidden gap-2 md:flex">
+        <Button
+          className="hidden gap-2 md:flex"
+          disabled={!formatSeismicMonitorDate(date)}
+        >
           <FileChartColumnIncreasing />
           Generate Report
         </Button>
@@ -107,7 +110,7 @@ export default function Dashboard({
           >
             <LineChart
               accessibilityLayer
-              data={chartData}
+              data={formatSeismicMonitorDate(date) ? chartData : []}
               margin={{
                 left: 12,
                 right: 12,
@@ -147,10 +150,14 @@ export default function Dashboard({
               <CardTitle>Peak Magnitude</CardTitle>
               <CardDescription>
                 <span className="text-primary text-2xl font-semibold">
-                  {peakMagnitude.value.toFixed(1)}
+                  {formatSeismicMonitorDate(date)
+                    ? peakMagnitude.value.toFixed(1)
+                    : "--"}
                 </span>
                 <span className="text-muted-foreground ml-2">
-                  @ {peakMagnitude.time}
+                  {formatSeismicMonitorDate(date)
+                    ? `@ ${peakMagnitude.time}`
+                    : ""}
                 </span>
               </CardDescription>
               <p className="text-muted-foreground mt-1 text-xs">
@@ -162,10 +169,10 @@ export default function Dashboard({
         <Card className="w-full">
           <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
             <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
-              <CardTitle> Average Magnitude</CardTitle>
+              <CardTitle>Average Magnitude</CardTitle>
               <CardDescription>
                 <span className="text-primary text-2xl font-semibold">
-                  {avgMagnitude}
+                  {formatSeismicMonitorDate(date) ? avgMagnitude : "--"}
                 </span>
               </CardDescription>
               <p className="text-muted-foreground mt-1 text-xs">
@@ -181,9 +188,11 @@ export default function Dashboard({
               <CardTitle>Hours with Significant Activity</CardTitle>
               <CardDescription>
                 <span className="text-primary text-2xl font-semibold">
-                  {significantHours}
+                  {formatSeismicMonitorDate(date) ? significantHours : "--"}
                 </span>
-                <span className="text-muted-foreground ml-2">hours</span>
+                {formatSeismicMonitorDate(date) ? (
+                  <span className="text-muted-foreground ml-2">hours</span>
+                ) : null}
               </CardDescription>
               <p className="text-muted-foreground mt-1 text-xs">
                 Periods where magnitude exceeded 1.0
@@ -197,10 +206,12 @@ export default function Dashboard({
               <CardTitle>Peak Activity Hour</CardTitle>
               <CardDescription>
                 <span className="text-primary text-2xl font-semibold">
-                  {peakFrequency.time}
+                  {formatSeismicMonitorDate(date) ? peakFrequency.time : "--"}
                 </span>
                 <span className="text-muted-foreground ml-2">
-                  ({peakFrequency.value} events)
+                  {formatSeismicMonitorDate(date)
+                    ? `(${peakFrequency.value} events)`
+                    : ""}
                 </span>
               </CardDescription>
               <p className="text-muted-foreground mt-1 text-xs">
