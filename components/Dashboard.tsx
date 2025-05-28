@@ -94,7 +94,9 @@ export default function Dashboard({
           <div className="flex flex-1 flex-col justify-center gap-1 px-1.5 pt-2">
             <CardTitle>Seismic Activity Monitor</CardTitle>
             <CardDescription>
-              {formatSeismicMonitorDate(date)} earthquake readings
+              {formatSeismicMonitorDate(date)
+                ? `Earthquake readings for ${formatSeismicMonitorDate(date)}`
+                : "No earthquake readings"}
             </CardDescription>
           </div>
         </CardHeader>
