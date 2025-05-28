@@ -21,35 +21,46 @@ export default async function Page() {
   if (session) return redirect("/dashboard");
 
   return (
-    <>
-      <header className="mx-6 my-4">
-        <Link href="/" className="flex items-center gap-1">
-          <Image
-            src="/queyk-light.png"
-            width={25}
-            height={25}
-            alt="queyk's logo"
-            className="size-4.5 invert md:size-5.5"
-          />
-          <p className="mb-0.5 font-semibold md:text-xl">Queyk</p>
-        </Link>
-      </header>
-      <main className="mx-6 grid min-h-[85dvh] items-center justify-center gap-4">
-        <div className="grid gap-2">
-          <h1 className="text-3xl font-bold md:text-4xl">Welcome back!</h1>
-          <p className="text-muted-foreground text-sm font-medium md:text-base">
-            Access your school&apos;s earthquake monitoring system.
-          </p>
-          <Button
-            onClick={signInAction}
-            className="mt-2 w-full cursor-pointer gap-3 font-semibold"
-            size="lg"
-          >
-            <FaGoogle className="size-4" />
-            Sign in with Google
-          </Button>
+    <section className="flex min-h-screen px-4 py-16 md:py-32 dark:bg-transparent">
+      <form
+        action=""
+        className="bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5"
+      >
+        <div className="p-6">
+          <div>
+            <Link
+              href="/"
+              aria-label="go home"
+              className="flex items-center gap-1"
+            >
+              <Image
+                src="/queyk-light.png"
+                width={25}
+                height={25}
+                alt="queyk's logo"
+                className="size-4.5 invert md:size-5.5"
+              />
+              <p className="mb-0.5 font-semibold md:text-xl">Queyk</p>
+            </Link>
+            <h1 className="mt-4 mb-1 text-xl font-semibold">
+              Sign In to Queyk
+            </h1>
+            <p>Welcome back! Sign in to continue</p>
+          </div>
+
+          <div className="mt-6">
+            <Button
+              type="button"
+              variant="default"
+              className="w-full font-semibold"
+              onClick={signInAction}
+            >
+              <FaGoogle className="size-4" />
+              <span>Sign in with Google</span>
+            </Button>
+          </div>
         </div>
-      </main>
-    </>
+      </form>
+    </section>
   );
 }

@@ -14,14 +14,34 @@ export default function AuthErrorPage() {
   return (
     <Suspense
       fallback={
-        <div className="mx-6 grid min-h-[85dvh] items-center justify-center gap-2 md:gap-3">
-          <h5 className="text-3xl font-bold md:text-4xl">
-            Something went wrong
-          </h5>
-          <p className="text-muted-foreground text-sm font-medium text-balance break-words md:text-base">
-            Loading error details...
-          </p>
-        </div>
+        <section className="flex min-h-screen px-4 py-16 md:py-32 dark:bg-transparent">
+          <div className="bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5">
+            <div className="p-6">
+              <div>
+                <Link
+                  href="/"
+                  aria-label="go home"
+                  className="flex items-center gap-1"
+                >
+                  <Image
+                    src="/queyk-light.png"
+                    width={25}
+                    height={25}
+                    alt="queyk's logo"
+                    className="size-4.5 invert md:size-5.5"
+                  />
+                  <p className="mb-0.5 font-semibold md:text-xl">Queyk</p>
+                </Link>
+                <h1 className="mt-4 mb-1 text-xl font-semibold">
+                  Something went wrong
+                </h1>
+                <p className="text-muted-foreground">
+                  Loading error details...
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
       }
     >
       <ErrorContent />
@@ -33,105 +53,97 @@ function ErrorContent() {
   const search = useSearchParams();
   const error = search.get("error");
 
+  const getErrorContent = () => {
+    switch (error) {
+      case "AccessDenied":
+        return {
+          title: "Access Denied",
+          message:
+            "Access restricted. You must use your official Immaculada Concepcion College email to sign in.",
+          showGoogleButton: true,
+          showHomeButton: false,
+        };
+      case "Verification":
+        return {
+          title: "Email Verification Required",
+          message:
+            "We couldn't verify your email address. Please check your inbox for a verification email or try signing in again.",
+          showGoogleButton: true,
+          showHomeButton: true,
+        };
+      case "Configuration":
+        return {
+          title: "Service Unavailable",
+          message:
+            "There's an issue with the authentication service. Please try again later or contact support.",
+          showGoogleButton: false,
+          showHomeButton: true,
+        };
+      default:
+        return {
+          title: "Something went wrong",
+          message:
+            "An unexpected error occurred. Please try again or contact support if the problem persists.",
+          showGoogleButton: false,
+          showHomeButton: true,
+        };
+    }
+  };
+
+  const errorContent = getErrorContent();
+
   return (
-    <>
-      <header className="mx-6 my-4">
-        <Link href="/" className="flex items-center gap-1">
-          <Image
-            src="/queyk-light.png"
-            width={25}
-            height={25}
-            alt="queyk's logo"
-            className="size-4.5 invert md:size-5.5"
-          />
-          <p className="mb-0.5 font-semibold md:text-xl">Queyk</p>
-        </Link>
-      </header>
-      <div className="mx-6 grid min-h-[85dvh] items-center justify-center gap-2 md:gap-3">
-        <div className="grid gap-2">
-          <h5 className="text-3xl font-bold md:text-4xl">
-            Something went wrong
-          </h5>
-          {error === "AccessDenied" && (
-            <>
-              <p className="text-muted-foreground text-sm font-medium text-balance break-words md:text-base">
-                Access restricted. You must use your official Immaculada
-                Concepcion College email to sign in.
-              </p>
+    <section className="flex min-h-screen px-4 py-16 md:py-32 dark:bg-transparent">
+      <div className="bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5">
+        <div className="p-6">
+          <div>
+            <Link
+              href="/"
+              aria-label="go home"
+              className="flex items-center gap-1"
+            >
+              <Image
+                src="/queyk-light.png"
+                width={25}
+                height={25}
+                alt="queyk's logo"
+                className="size-4.5 invert md:size-5.5"
+              />
+              <p className="mb-0.5 font-semibold md:text-xl">Queyk</p>
+            </Link>
+            <h1 className="mt-4 mb-1 text-xl font-semibold">
+              {errorContent.title}
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              {errorContent.message}
+            </p>
+          </div>
+
+          <div className="mt-6 space-y-3">
+            {errorContent.showGoogleButton && (
               <Button
+                type="button"
+                variant="default"
+                className="w-full font-semibold"
                 onClick={signInAction}
-                className="mt-2 cursor-pointer gap-3 font-semibold"
-                size="lg"
               >
                 <FaGoogle className="size-4" />
-                Sign in with Google
+                <span>Sign in with Google</span>
               </Button>
-            </>
-          )}
+            )}
 
-          {error === "Verification" && (
-            <>
-              <p className="text-muted-foreground text-sm font-medium text-balance break-words md:text-base">
-                We couldn&apos;t verify your email address. Please check your
-                inbox for a verification email or try signing in again.
-              </p>
-              <div className="mt-2 grid gap-3">
-                <Button
-                  onClick={signInAction}
-                  className="cursor-pointer gap-3 font-semibold"
-                  size="lg"
-                >
-                  <FaGoogle className="size-4" />
-                  Sign in with Google
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="cursor-pointer font-semibold"
-                  size="lg"
-                >
-                  <Link href="/">Go to Home</Link>
-                </Button>
-              </div>
-            </>
-          )}
-
-          {error === "Configuration" && (
-            <>
-              <p className="text-muted-foreground text-sm font-medium text-balance break-words md:text-base">
-                There&apos;s an issue with the authentication service. Please
-                try again later or contact support.
-              </p>
+            {errorContent.showHomeButton && (
               <Button
                 asChild
-                className="mt-2 cursor-pointer font-semibold"
-                size="lg"
+                variant={errorContent.showGoogleButton ? "outline" : "default"}
+                className="w-full font-semibold"
               >
-                <Link href="/">Return to Home</Link>
+                <Link href="/">Go to Home</Link>
               </Button>
-            </>
-          )}
-
-          {!error ||
-            (error !== "AccessDenied" &&
-              error !== "Verification" &&
-              error !== "Configuration" && (
-                <>
-                  <p className="text-muted-foreground text-sm font-medium text-balance break-words md:text-base">
-                    An unexpected error occurred. Please try again or contact
-                    support if the problem persists.
-                  </p>
-                  <Button
-                    asChild
-                    className="mt-2 cursor-pointer font-semibold"
-                    size="lg"
-                  >
-                    <Link href="/">Go to Home</Link>
-                  </Button>
-                </>
-              ))}
+            )}
+          </div>
         </div>
       </div>
-    </>
+    </section>
   );
 }
