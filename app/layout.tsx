@@ -12,8 +12,23 @@ export const metadata: Metadata = {
     template: "%s | Queyk",
     default: "Queyk",
   },
-  description: "Open-source earthquake early warning system.",
+  description: "An open-source earthquake early warning system.",
   metadataBase: new URL("https://queyk.vercel.app"),
+  openGraph: {
+    type: "website",
+    url: "https://queyk.vercel.app",
+    title: "Queyk - An open-source earthquake early warning system.",
+    description:
+      "Earthquake monitoring and early warning system. Get alerts, track seismic activity, and stay prepared with our open-source platform.",
+    siteName: "Queyk",
+    images: [
+      {
+        url: "https://github.com/user-attachments/assets/e46f81a5-8a46-47fc-b83a-4feaaf81e4dd",
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
