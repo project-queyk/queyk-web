@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     siteName: "Queyk",
     images: [
       {
-        url: "https://github.com/user-attachments/assets/e46f81a5-8a46-47fc-b83a-4feaaf81e4dd",
+        url: "https://queyk.vercel.app/og.png",
         width: 1200,
         height: 630,
       },
