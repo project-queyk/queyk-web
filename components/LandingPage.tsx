@@ -180,7 +180,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <Button className="cursor-pointer font-semibold">
+          <Button className="font-semibold">
             <Link href="/dashboard">Sign in</Link>
           </Button>
         )}
