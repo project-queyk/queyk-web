@@ -21,7 +21,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       try {
         if (
           !profile ||
-          !profile.email?.endsWith(process.env.AUTH_EMAIL_DOMAIN ?? "")
+          !profile.email?.endsWith(process.env.AUTH_EMAIL_DOMAIN!)
         ) {
           return false;
         }
