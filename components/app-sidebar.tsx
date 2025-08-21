@@ -5,7 +5,6 @@ import { Session } from "next-auth";
 import { usePathname } from "next/navigation";
 import {
   AlignLeft,
-  BookOpen,
   ClipboardList,
   LayoutDashboard,
   LogOutIcon,
@@ -45,11 +44,11 @@ const items = [
     url: "/protocols",
     icon: ClipboardList,
   },
-  {
-    title: "User Manual",
-    url: "/user-manual",
-    icon: BookOpen,
-  },
+  // {
+  //   title: "User Manual",
+  //   url: "/user-manual",
+  //   icon: BookOpen,
+  // },
 ];
 
 export function AppSidebar({ session }: { session: Session }) {
