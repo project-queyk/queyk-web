@@ -21,14 +21,15 @@ export async function signInBackendAction(profile: Profile) {
     name: profile.name,
     oauthId: profile.sub,
     profileImage: profile.picture,
-    tokenType: "auth",
   };
+
   try {
     const response = await fetch(`${process.env.BACKEND_URL}/v1/api/users`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.AUTH_TOKEN}`,
         "Content-Type": "application/json",
+        "Token-Type": "auth",
       },
       body: JSON.stringify(userValues),
     });
