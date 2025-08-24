@@ -7,12 +7,12 @@ import carbo from "@/public/team/carbo.jpeg";
 export const members = [
   {
     name: "John Vincent Madriaga",
-    role: "Project Manager, Backend Dev",
+    role: "Project Manager, IoT Dev",
     avatar: madriaga,
   },
   {
     name: "John Luis Cabantac",
-    role: "Frontend Dev",
+    role: "Full-Stack Dev",
     avatar: cabantac,
   },
   {
