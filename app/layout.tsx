@@ -13,17 +13,17 @@ export const metadata: Metadata = {
     default: "Queyk",
   },
   description: "An open-source earthquake early warning system.",
-  metadataBase: new URL("https://queyk.com"),
+  metadataBase: new URL("https://www.queyk.com"),
   openGraph: {
     type: "website",
-    url: "https://queyk.com",
+    url: "https://www.queyk.com",
     title: "Queyk - An open-source earthquake early warning system.",
     description:
       "Earthquake monitoring and early warning system. Get alerts, track seismic activity, and stay prepared with our open-source platform.",
     siteName: "Queyk",
     images: [
       {
-        url: "https://queyk.com/og.png",
+        url: "https://www.queyk.com/og.png",
         width: 1200,
         height: 630,
       },
