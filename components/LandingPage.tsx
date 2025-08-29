@@ -527,7 +527,14 @@ export default function LandingPage({ session }: { session: Session | null }) {
           ease: "easeOut",
         }}
       >
-        <p>© {new Date().getFullYear()} Queyk Project - All Rights Reserved</p>
+        <div className="space-y-2">
+          <div>
+            <Link href="/privacy" className="hover:text-gray-700 underline">
+              Privacy Policy
+            </Link>
+          </div>
+          <p>© {new Date().getFullYear()} Queyk Project - All Rights Reserved</p>
+        </div>
       </motion.footer>
     </>
   );
