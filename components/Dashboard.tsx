@@ -59,6 +59,26 @@ const skeletonChartConfig = {
   },
 } satisfies ChartConfig;
 
+const earthquakeChartConfig = {
+  activity: {
+    label: "Earthquake Activity",
+  },
+  magnitude: {
+    label: "Magnitude",
+    color: "hsl(var(--chart-1))",
+  },
+} satisfies ChartConfig;
+
+const skeletonEarthquakeConfig = {
+  activity: {
+    label: "Earthquake Activity",
+  },
+  magnitude: {
+    label: "Magnitude",
+    color: "#e5e7eb",
+  },
+} satisfies ChartConfig;
+
 type ReadingData = {
   battery: number;
   createdAt: string;
@@ -68,6 +88,13 @@ type ReadingData = {
   siMinimum: number;
   signalStrength: string;
 };
+
+// type EarthquakeData = {
+//   id: string;
+//   createdAt: string;
+//   magnitude: number;
+//   duration: number;
+// };
 
 export default function Dashboard() {
   const [date, setDate] = useState<DateRange | undefined>({
@@ -127,7 +154,6 @@ export default function Dashboard() {
 
   const chartData = useMemo(() => {
     if (isLoading) {
-      // Create dummy skeleton data for loading state
       return Array.from({ length: 8 }, (_, i) => ({
         time: `${i + 1}:00`,
         fullDateTime: `Loading...`,
@@ -166,6 +192,23 @@ export default function Dashboard() {
       battery: reading.battery,
     }));
   }, [readings, date, isLoading]);
+
+  const earthquakeHistoryData = useMemo(() => {
+    if (isLoading) {
+      return Array.from({ length: 6 }, (_, i) => {
+        const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+        return {
+          id: `skeleton-${i}`,
+          createdAt: date.toISOString(),
+          magnitude: 3.0 + Math.random() * 4.0,
+          duration: 10 + Math.random() * 50,
+          time: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+        };
+      });
+    }
+
+    return [];
+  }, [isLoading]);
 
   const peakMagnitude = useMemo(() => {
     if (!readings.length) return { value: 0, time: "--" };
@@ -234,7 +277,7 @@ export default function Dashboard() {
               <CardDescription>
                 {isLoading ? (
                   <div className="animate-pulse">
-                    <div className="h-8 w-16 bg-gray-300 rounded"></div>
+                    <div className="h-8 w-16 rounded bg-gray-300"></div>
                   </div>
                 ) : (
                   <>
@@ -264,7 +307,7 @@ export default function Dashboard() {
               <CardDescription>
                 {isLoading ? (
                   <div className="animate-pulse">
-                    <div className="h-8 w-16 bg-gray-300 rounded"></div>
+                    <div className="h-8 w-16 rounded bg-gray-300"></div>
                   </div>
                 ) : (
                   <span className="text-primary text-2xl font-semibold">
@@ -288,7 +331,7 @@ export default function Dashboard() {
               <CardDescription>
                 {isLoading ? (
                   <div className="animate-pulse">
-                    <div className="h-8 w-16 bg-gray-300 rounded"></div>
+                    <div className="h-8 w-16 rounded bg-gray-300"></div>
                   </div>
                 ) : (
                   <>
@@ -298,7 +341,9 @@ export default function Dashboard() {
                         : "--"}
                     </span>
                     {formatSeismicMonitorDate(date) && readings.length ? (
-                      <span className="text-muted-foreground ml-2">readings</span>
+                      <span className="text-muted-foreground ml-2">
+                        readings
+                      </span>
                     ) : null}
                   </>
                 )}
@@ -316,7 +361,7 @@ export default function Dashboard() {
               <CardDescription>
                 {isLoading ? (
                   <div className="animate-pulse">
-                    <div className="h-8 w-16 bg-gray-300 rounded"></div>
+                    <div className="h-8 w-16 rounded bg-gray-300"></div>
                   </div>
                 ) : (
                   <>
@@ -372,103 +417,7 @@ export default function Dashboard() {
                 tickMargin={8}
                 minTickGap={32}
               />
-              <ChartTooltip
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    const data = payload[0].payload;
-                    return (
-                      <div className="bg-background rounded-lg border p-2 shadow-sm">
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="flex flex-col">
-                            <span className="text-muted-foreground text-[0.70rem] uppercase">
-                              Time
-                            </span>
-                            <span className="font-bold">
-                              {data.fullDateTime}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="mt-2 flex flex-col gap-1">
-                          {payload.map((entry, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center gap-2"
-                            >
-                              <div
-                                className="h-2 w-2 rounded-full"
-                                style={{ backgroundColor: entry.color }}
-                              />
-                              <span className="text-sm">
-                                {entry.name}:{" "}
-                                {typeof entry.value === "number"
-                                  ? entry.value.toFixed(3)
-                                  : "--"}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-              <Line
-                dataKey="siAverage"
-                type="monotone"
-                stroke={isLoading ? "#d1d5db" : `var(--color-siAverage)`}
-                strokeWidth={2}
-                dot={false}
-              />
-              <Line
-                dataKey="siMaximum"
-                type="monotone"
-                stroke={isLoading ? "#e5e7eb" : `var(--color-siMaximum)`}
-                strokeWidth={2}
-                dot={false}
-              />
-              <Line
-                dataKey="siMinimum"
-                type="monotone"
-                stroke={isLoading ? "#f3f4f6" : `var(--color-siMinimum)`}
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
-          </ChartContainer>
-        </CardContent>
-      </Card>
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-[2fr_1fr]">
-        <Card className="w-full">
-          <CardHeader className="mx-4.5 flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
-            <div className="flex flex-1 flex-col justify-center gap-1 px-1.5 pt-2">
-              <CardTitle>Earthquake History</CardTitle>
-              <CardDescription>
-                Historical earthquake events and intensity records over time
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="px-2 sm:p-6">
-            <ChartContainer
-              config={isLoading ? skeletonChartConfig : chartConfig}
-              className="aspect-auto h-[250px] w-full"
-            >
-              <LineChart
-                accessibilityLayer
-                data={chartData}
-                margin={{
-                  left: 12,
-                  right: 12,
-                }}
-              >
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="time"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                  minTickGap={32}
-                />
+              {!isLoading && (
                 <ChartTooltip
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
@@ -510,24 +459,124 @@ export default function Dashboard() {
                     return null;
                   }}
                 />
-                <Line
-                  dataKey="siAverage"
-                  type="monotone"
-                  stroke={isLoading ? "#d1d5db" : `var(--color-siAverage)`}
-                  strokeWidth={2}
-                  dot={false}
+              )}
+              <Line
+                dataKey="siAverage"
+                type="monotone"
+                stroke={isLoading ? "#d1d5db" : `var(--color-siAverage)`}
+                strokeWidth={2}
+                dot={false}
+              />
+              <Line
+                dataKey="siMaximum"
+                type="monotone"
+                stroke={isLoading ? "#e5e7eb" : `var(--color-siMaximum)`}
+                strokeWidth={2}
+                dot={false}
+              />
+              <Line
+                dataKey="siMinimum"
+                type="monotone"
+                stroke={isLoading ? "#f3f4f6" : `var(--color-siMinimum)`}
+                strokeWidth={2}
+                dot={false}
+              />
+            </LineChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-[2fr_1fr]">
+        <Card className="w-full">
+          <CardHeader className="mx-4.5 flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
+            <div className="flex flex-1 flex-col justify-center gap-1 px-1.5 pt-2">
+              <CardTitle>Earthquake History</CardTitle>
+              <CardDescription>
+                Historical earthquake events and intensity records over time
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="px-2 sm:p-6">
+            <ChartContainer
+              config={
+                isLoading ? skeletonEarthquakeConfig : earthquakeChartConfig
+              }
+              className="aspect-auto h-[250px] w-full"
+            >
+              <LineChart
+                accessibilityLayer
+                data={earthquakeHistoryData}
+                margin={{
+                  left: 12,
+                  right: 12,
+                }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="time"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  minTickGap={32}
                 />
+                {!isLoading && (
+                  <ChartTooltip
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-background rounded-lg border p-2 shadow-sm">
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="flex flex-col">
+                                <span className="text-muted-foreground text-[0.70rem] uppercase">
+                                  Time
+                                </span>
+                                <span className="font-bold">
+                                  {new Date(data.createdAt).toLocaleString("en-US", {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="mt-2 flex flex-col gap-1">
+                              <div className="flex items-center gap-2">
+                                <div
+                                  className="h-2 w-2 rounded-full"
+                                  style={{
+                                    backgroundColor: "hsl(var(--chart-1))",
+                                  }}
+                                />
+                                <span className="text-sm">
+                                  Magnitude:{" "}
+                                  {typeof data.magnitude === "number"
+                                    ? data.magnitude.toFixed(1)
+                                    : "--"}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full bg-gray-400" />
+                                <span className="text-sm">
+                                  Duration:{" "}
+                                  {typeof data.duration === "number"
+                                    ? `${data.duration.toFixed(0)}s`
+                                    : "--"}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                )}
                 <Line
-                  dataKey="siMaximum"
+                  dataKey="magnitude"
                   type="monotone"
-                  stroke={isLoading ? "#e5e7eb" : `var(--color-siMaximum)`}
-                  strokeWidth={2}
-                  dot={false}
-                />
-                <Line
-                  dataKey="siMinimum"
-                  type="monotone"
-                  stroke={isLoading ? "#f3f4f6" : `var(--color-siMinimum)`}
+                  stroke={isLoading ? "#e5e7eb" : "hsl(var(--chart-1))"}
                   strokeWidth={2}
                   dot={false}
                 />
@@ -545,9 +594,15 @@ export default function Dashboard() {
                 <CardDescription>
                   {isLoading ? (
                     <div className="space-y-2">
-                      <div className="h-4 ai-shimmer animate-[shimmer_8s_linear_infinite] rounded w-full"></div>
-                      <div className="h-4 ai-shimmer animate-[shimmer_8s_linear_infinite] rounded w-3/4" style={{animationDelay: '0.4s'}}></div>
-                      <div className="h-4 ai-shimmer animate-[shimmer_8s_linear_infinite] rounded w-1/2" style={{animationDelay: '0.8s'}}></div>
+                      <div className="ai-shimmer h-4 w-full animate-[shimmer_8s_linear_infinite] rounded"></div>
+                      <div
+                        className="ai-shimmer h-4 w-3/4 animate-[shimmer_8s_linear_infinite] rounded"
+                        style={{ animationDelay: "0.4s" }}
+                      ></div>
+                      <div
+                        className="ai-shimmer h-4 w-1/2 animate-[shimmer_8s_linear_infinite] rounded"
+                        style={{ animationDelay: "0.8s" }}
+                      ></div>
                     </div>
                   ) : (
                     <p className="text-foreground text-sm leading-relaxed">
@@ -570,13 +625,13 @@ export default function Dashboard() {
                 <CardDescription>
                   {isLoading ? (
                     <div className="animate-pulse">
-                      <div className="h-8 w-16 bg-gray-300 rounded"></div>
+                      <div className="h-8 w-16 rounded bg-gray-300"></div>
                     </div>
                   ) : (
                     <span
-                      className={`text-2xl font-semibold ${getBatteryColor(batteryLevel)}`}
+                      className={`text-2xl font-semibold ${batteryLevel ? getBatteryColor(batteryLevel) : "text-primary"}`}
                     >
-                      {`${batteryLevel}%`}
+                      {batteryLevel ? `${batteryLevel}%` : "--"}
                     </span>
                   )}
                 </CardDescription>
