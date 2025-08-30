@@ -63,8 +63,16 @@ export default function Dashboard() {
       if (!date?.from && !date?.to) return null;
 
       const params = new URLSearchParams();
-      if (date.from) params.append("startDate", date.from.toISOString());
-      if (date.to) params.append("endDate", date.to.toISOString());
+      if (date.from) {
+        const adjustedFromDate = new Date(
+          date.from.getTime() + 8 * 60 * 60 * 1000,
+        );
+        params.append("startDate", adjustedFromDate.toISOString());
+      }
+      if (date.to) {
+        const adjustedToDate = new Date(date.to.getTime() + 8 * 60 * 60 * 1000);
+        params.append("endDate", adjustedToDate.toISOString());
+      }
 
       const response = await fetch(`/api/readings?${params}`);
       if (!response.ok) {
