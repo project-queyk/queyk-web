@@ -18,10 +18,12 @@ export function DatePickerWithRange({
   className,
   date,
   onDateChange,
+  startDate,
 }: {
   className?: React.HTMLAttributes<HTMLDivElement>;
   date: DateRange | undefined;
   onDateChange: (date: DateRange | undefined) => void;
+  startDate?: Date;
 }) {
   return (
     <div className={cn("grid gap-2", className)}>
@@ -52,13 +54,17 @@ export function DatePickerWithRange({
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
-            initialFocus
+            autoFocus
             mode="range"
             defaultMonth={date?.from}
             selected={date}
             onSelect={onDateChange}
             numberOfMonths={2}
-            disabled={{ after: new Date() }}
+            disabled={
+              startDate
+                ? { before: startDate, after: new Date() }
+                : { after: new Date() }
+            }
           />
         </PopoverContent>
       </Popover>
