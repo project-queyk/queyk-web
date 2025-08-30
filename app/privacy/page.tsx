@@ -192,8 +192,8 @@ export default function Page() {
             </Card>
           ))}
           <div className="text-muted-foreground py-8 text-center text-xs md:text-sm">
-            Last updated: {new Date().toLocaleDateString()} | ©{" "}
-            {new Date().getFullYear()} Queyk Project - All Rights Reserved
+            Last updated: Aug 30, 2025 | © {new Date().getFullYear()} Queyk
+            Project - All Rights Reserved
           </div>
         </div>
       </div>
