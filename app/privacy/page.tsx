@@ -132,9 +132,9 @@ const privacySections = [
           "We use Google OAuth for secure login. Google's privacy policy governs data handled during authentication. We only receive basic profile information.",
       },
       {
-        title: "Seismic Data Sources",
+        title: "IoT Sensor Data",
         description:
-          "Earthquake data comes from PHIVOLCS and official monitoring stations. This data contains no personal information and is used for public safety.",
+          "Seismic data is collected exclusively from our own IoT sensors and devices. This data contains no personal information and is used for earthquake detection and public safety alerts.",
       },
       {
         title: "Educational Institution Integration",
