@@ -486,9 +486,7 @@ export default function Dashboard() {
                 </CardTitle>
                 <CardDescription>
                   <p className="text-foreground text-sm leading-relaxed">
-                    {formatSeismicMonitorDate(date) &&
-                    readings.length &&
-                    aiSummary
+                    {formatSeismicMonitorDate(date) && aiSummary
                       ? aiSummary
                       : "No AI summary available for the selected period"}
                   </p>
