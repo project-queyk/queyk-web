@@ -41,6 +41,24 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+const skeletonChartConfig = {
+  activity: {
+    label: "Seismic Activity",
+  },
+  siAverage: {
+    label: "SI Average",
+    color: "#d1d5db",
+  },
+  siMaximum: {
+    label: "SI Maximum",
+    color: "#e5e7eb",
+  },
+  siMinimum: {
+    label: "SI Minimum",
+    color: "#f3f4f6",
+  },
+} satisfies ChartConfig;
+
 type ReadingData = {
   battery: number;
   createdAt: string;
@@ -108,6 +126,18 @@ export default function Dashboard() {
   }, [readingsData?.firstDate, persistedFirstDate]);
 
   const chartData = useMemo(() => {
+    if (isLoading) {
+      // Create dummy skeleton data for loading state
+      return Array.from({ length: 8 }, (_, i) => ({
+        time: `${i + 1}:00`,
+        fullDateTime: `Loading...`,
+        siAverage: 0.2 + Math.random() * 0.3,
+        siMaximum: 0.4 + Math.random() * 0.4,
+        siMinimum: 0.1 + Math.random() * 0.2,
+        battery: 85 + Math.random() * 10,
+      }));
+    }
+
     const isMultipleDays =
       date?.from &&
       date?.to &&
@@ -135,7 +165,7 @@ export default function Dashboard() {
       siMinimum: reading.siMinimum,
       battery: reading.battery,
     }));
-  }, [readings, date]);
+  }, [readings, date, isLoading]);
 
   const peakMagnitude = useMemo(() => {
     if (!readings.length) return { value: 0, time: "--" };
@@ -197,21 +227,29 @@ export default function Dashboard() {
         </Button>
       </div>
       <div className="grid gap-3 md:flex">
-        <Card className={`w-full ${isLoading ? "blur-sm" : ""}`}>
+        <Card className="w-full">
           <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
             <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
               <CardTitle>Peak SI Maximum</CardTitle>
               <CardDescription>
-                <span className="text-primary text-2xl font-semibold">
-                  {formatSeismicMonitorDate(date) && readings.length
-                    ? peakMagnitude.value.toFixed(3)
-                    : "--"}
-                </span>
-                <span className="text-muted-foreground ml-2">
-                  {formatSeismicMonitorDate(date) && readings.length
-                    ? `@ ${peakMagnitude.time}`
-                    : ""}
-                </span>
+                {isLoading ? (
+                  <div className="animate-pulse">
+                    <div className="h-8 w-16 bg-gray-300 rounded"></div>
+                  </div>
+                ) : (
+                  <>
+                    <span className="text-primary text-2xl font-semibold">
+                      {formatSeismicMonitorDate(date) && readings.length
+                        ? peakMagnitude.value.toFixed(3)
+                        : "--"}
+                    </span>
+                    <span className="text-muted-foreground ml-2">
+                      {formatSeismicMonitorDate(date) && readings.length
+                        ? `@ ${peakMagnitude.time}`
+                        : ""}
+                    </span>
+                  </>
+                )}
               </CardDescription>
               <p className="text-muted-foreground mt-1 text-xs">
                 Highest seismic intensity reading during the selected period
@@ -219,16 +257,22 @@ export default function Dashboard() {
             </div>
           </CardHeader>
         </Card>
-        <Card className={`w-full ${isLoading ? "blur-sm" : ""}`}>
+        <Card className="w-full">
           <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
             <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
               <CardTitle>Average SI Reading</CardTitle>
               <CardDescription>
-                <span className="text-primary text-2xl font-semibold">
-                  {formatSeismicMonitorDate(date) && readings.length
-                    ? avgMagnitude
-                    : "--"}
-                </span>
+                {isLoading ? (
+                  <div className="animate-pulse">
+                    <div className="h-8 w-16 bg-gray-300 rounded"></div>
+                  </div>
+                ) : (
+                  <span className="text-primary text-2xl font-semibold">
+                    {formatSeismicMonitorDate(date) && readings.length
+                      ? avgMagnitude
+                      : "--"}
+                  </span>
+                )}
               </CardDescription>
               <p className="text-muted-foreground mt-1 text-xs">
                 Mean seismic intensity across all readings for the selected
@@ -237,19 +281,27 @@ export default function Dashboard() {
             </div>
           </CardHeader>
         </Card>
-        <Card className={`w-full ${isLoading ? "blur-sm" : ""}`}>
+        <Card className="w-full">
           <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
             <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
               <CardTitle>Significant Activity Readings</CardTitle>
               <CardDescription>
-                <span className="text-primary text-2xl font-semibold">
-                  {formatSeismicMonitorDate(date) && readings.length
-                    ? significantReadings
-                    : "--"}
-                </span>
-                {formatSeismicMonitorDate(date) && readings.length ? (
-                  <span className="text-muted-foreground ml-2">readings</span>
-                ) : null}
+                {isLoading ? (
+                  <div className="animate-pulse">
+                    <div className="h-8 w-16 bg-gray-300 rounded"></div>
+                  </div>
+                ) : (
+                  <>
+                    <span className="text-primary text-2xl font-semibold">
+                      {formatSeismicMonitorDate(date) && readings.length
+                        ? significantReadings
+                        : "--"}
+                    </span>
+                    {formatSeismicMonitorDate(date) && readings.length ? (
+                      <span className="text-muted-foreground ml-2">readings</span>
+                    ) : null}
+                  </>
+                )}
               </CardDescription>
               <p className="text-muted-foreground mt-1 text-xs">
                 Readings where SI Maximum exceeded 1.0
@@ -257,21 +309,29 @@ export default function Dashboard() {
             </div>
           </CardHeader>
         </Card>
-        <Card className={`w-full ${isLoading ? "blur-sm" : ""}`}>
+        <Card className="w-full">
           <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
             <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
               <CardTitle>Peak Activity Time</CardTitle>
               <CardDescription>
-                <span className="text-primary text-2xl font-semibold">
-                  {formatSeismicMonitorDate(date) && readings.length
-                    ? peakActivity.value
-                    : "--"}
-                </span>
-                <span className="text-muted-foreground ml-2">
-                  {formatSeismicMonitorDate(date) && readings.length
-                    ? `(${peakActivity.siAverage?.toFixed(3)} SI)`
-                    : ""}
-                </span>
+                {isLoading ? (
+                  <div className="animate-pulse">
+                    <div className="h-8 w-16 bg-gray-300 rounded"></div>
+                  </div>
+                ) : (
+                  <>
+                    <span className="text-primary text-2xl font-semibold">
+                      {formatSeismicMonitorDate(date) && readings.length
+                        ? peakActivity.value
+                        : "--"}
+                    </span>
+                    <span className="text-muted-foreground ml-2">
+                      {formatSeismicMonitorDate(date) && readings.length
+                        ? `(${peakActivity.siAverage?.toFixed(3)} SI)`
+                        : ""}
+                    </span>
+                  </>
+                )}
               </CardDescription>
               <p className="text-muted-foreground mt-1 text-xs">
                 Time with the highest average seismic intensity
@@ -280,7 +340,7 @@ export default function Dashboard() {
           </CardHeader>
         </Card>
       </div>
-      <Card className={isLoading ? "blur-sm" : ""}>
+      <Card>
         <CardHeader className="mx-4.5 flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
           <div className="flex flex-1 flex-col justify-center gap-1 px-1.5 pt-2">
             <CardTitle>Seismic Activity Monitor</CardTitle>
@@ -293,16 +353,12 @@ export default function Dashboard() {
         </CardHeader>
         <CardContent className="px-2 sm:p-6">
           <ChartContainer
-            config={chartConfig}
+            config={isLoading ? skeletonChartConfig : chartConfig}
             className="aspect-auto h-[250px] w-full"
           >
             <LineChart
               accessibilityLayer
-              data={
-                formatSeismicMonitorDate(date) && readings.length
-                  ? chartData
-                  : []
-              }
+              data={chartData}
               margin={{
                 left: 12,
                 right: 12,
@@ -360,21 +416,21 @@ export default function Dashboard() {
               <Line
                 dataKey="siAverage"
                 type="monotone"
-                stroke={`var(--color-siAverage)`}
+                stroke={isLoading ? "#d1d5db" : `var(--color-siAverage)`}
                 strokeWidth={2}
                 dot={false}
               />
               <Line
                 dataKey="siMaximum"
                 type="monotone"
-                stroke={`var(--color-siMaximum)`}
+                stroke={isLoading ? "#e5e7eb" : `var(--color-siMaximum)`}
                 strokeWidth={2}
                 dot={false}
               />
               <Line
                 dataKey="siMinimum"
                 type="monotone"
-                stroke={`var(--color-siMinimum)`}
+                stroke={isLoading ? "#f3f4f6" : `var(--color-siMinimum)`}
                 strokeWidth={2}
                 dot={false}
               />
@@ -383,7 +439,7 @@ export default function Dashboard() {
         </CardContent>
       </Card>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-[2fr_1fr]">
-        <Card className={`w-full ${isLoading ? "blur-sm" : ""}`}>
+        <Card className="w-full">
           <CardHeader className="mx-4.5 flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
             <div className="flex flex-1 flex-col justify-center gap-1 px-1.5 pt-2">
               <CardTitle>Earthquake History</CardTitle>
@@ -394,16 +450,12 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="px-2 sm:p-6">
             <ChartContainer
-              config={chartConfig}
+              config={isLoading ? skeletonChartConfig : chartConfig}
               className="aspect-auto h-[250px] w-full"
             >
               <LineChart
                 accessibilityLayer
-                data={
-                  formatSeismicMonitorDate(date) && readings.length
-                    ? chartData
-                    : []
-                }
+                data={chartData}
                 margin={{
                   left: 12,
                   right: 12,
@@ -461,21 +513,21 @@ export default function Dashboard() {
                 <Line
                   dataKey="siAverage"
                   type="monotone"
-                  stroke={`var(--color-siAverage)`}
+                  stroke={isLoading ? "#d1d5db" : `var(--color-siAverage)`}
                   strokeWidth={2}
                   dot={false}
                 />
                 <Line
                   dataKey="siMaximum"
                   type="monotone"
-                  stroke={`var(--color-siMaximum)`}
+                  stroke={isLoading ? "#e5e7eb" : `var(--color-siMaximum)`}
                   strokeWidth={2}
                   dot={false}
                 />
                 <Line
                   dataKey="siMinimum"
                   type="monotone"
-                  stroke={`var(--color-siMinimum)`}
+                  stroke={isLoading ? "#f3f4f6" : `var(--color-siMinimum)`}
                   strokeWidth={2}
                   dot={false}
                 />
@@ -484,20 +536,26 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         <div className="grid w-full gap-3">
-          <Card
-            className={`relative w-full overflow-hidden border-0 bg-gradient-to-br from-purple-50 via-blue-50 to-cyan-50 dark:from-purple-950/20 dark:via-blue-950/20 dark:to-cyan-950/20 ${isLoading ? "blur-sm" : ""}`}
-          >
+          <Card className="relative w-full overflow-hidden border-0 bg-gradient-to-br from-purple-50 via-blue-50 to-cyan-50 dark:from-purple-950/20 dark:via-blue-950/20 dark:to-cyan-950/20">
             <CardHeader className="relative z-10 flex flex-col space-y-0 p-0 sm:flex-row">
               <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
                 <CardTitle className="bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text pb-1 font-semibold text-transparent">
                   AI Summary
                 </CardTitle>
                 <CardDescription>
-                  <p className="text-foreground text-sm leading-relaxed">
-                    {formatSeismicMonitorDate(date) && aiSummary
-                      ? aiSummary
-                      : "No AI summary available for the selected period"}
-                  </p>
+                  {isLoading ? (
+                    <div className="space-y-2">
+                      <div className="h-4 ai-shimmer animate-[shimmer_8s_linear_infinite] rounded w-full"></div>
+                      <div className="h-4 ai-shimmer animate-[shimmer_8s_linear_infinite] rounded w-3/4" style={{animationDelay: '0.4s'}}></div>
+                      <div className="h-4 ai-shimmer animate-[shimmer_8s_linear_infinite] rounded w-1/2" style={{animationDelay: '0.8s'}}></div>
+                    </div>
+                  ) : (
+                    <p className="text-foreground text-sm leading-relaxed">
+                      {formatSeismicMonitorDate(date) && aiSummary
+                        ? aiSummary
+                        : "No AI summary available for the selected period"}
+                    </p>
+                  )}
                 </CardDescription>
                 <p className="text-muted-foreground mt-1 text-xs">
                   AI-generated analysis of seismic activity patterns
@@ -505,16 +563,22 @@ export default function Dashboard() {
               </div>
             </CardHeader>
           </Card>
-          <Card className={`w-full ${isLoading ? "blur-sm" : ""}`}>
+          <Card className="w-full">
             <CardHeader className="flex flex-col space-y-0 p-0 sm:flex-row">
               <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
                 <CardTitle>Battery Level</CardTitle>
                 <CardDescription>
-                  <span
-                    className={`text-2xl font-semibold ${getBatteryColor(batteryLevel)}`}
-                  >
-                    {isLoading ? "--" : `${batteryLevel}%`}
-                  </span>
+                  {isLoading ? (
+                    <div className="animate-pulse">
+                      <div className="h-8 w-16 bg-gray-300 rounded"></div>
+                    </div>
+                  ) : (
+                    <span
+                      className={`text-2xl font-semibold ${getBatteryColor(batteryLevel)}`}
+                    >
+                      {`${batteryLevel}%`}
+                    </span>
+                  )}
                 </CardDescription>
                 <p className="text-muted-foreground mt-1 text-xs">
                   Current IoT sensor battery level

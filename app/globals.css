@@ -118,3 +118,29 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes shimmer {
+  0% {
+    background-position: -400% 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: -400% 0;
+  }
+}
+
+.ai-shimmer {
+  background: linear-gradient(
+    90deg,
+    #e5e7eb 0%,
+    #e5e7eb 20%,
+    #c4b5fd 35%,
+    #93c5fd 50%,
+    #67e8f9 65%,
+    #e5e7eb 80%,
+    #e5e7eb 100%
+  );
+  background-size: 400% 100%;
+}
