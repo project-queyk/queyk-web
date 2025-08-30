@@ -1,6 +1,13 @@
+import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
+  const session = await auth();
+
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const searchParams = request.nextUrl.searchParams;
     const startDate = searchParams.get("startDate");
@@ -8,8 +15,11 @@ export async function GET(request: NextRequest) {
 
     if (!startDate && !endDate) {
       return NextResponse.json(
-        { error: "Invalid date range: requires at least one date (startDate or endDate)" },
-        { status: 400 }
+        {
+          error:
+            "Invalid date range: requires at least one date (startDate or endDate)",
+        },
+        { status: 400 },
       );
     }
 
@@ -21,13 +31,15 @@ export async function GET(request: NextRequest) {
           Authorization: `Bearer ${process.env.ADMIN_TOKEN}`,
           "Token-Type": "admin",
         },
-      }
+      },
     );
 
     if (!response.ok) {
       return NextResponse.json(
-        { error: `Failed to fetch readings: ${response.status} ${response.statusText}` },
-        { status: response.status }
+        {
+          error: `Failed to fetch readings: ${response.status} ${response.statusText}`,
+        },
+        { status: response.status },
       );
     }
 
@@ -37,7 +49,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching readings:", error);
     return NextResponse.json(
       { error: "Failed to retrieve readings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
