@@ -1,11 +1,14 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
 import { DateRange } from "react-day-picker";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState, useEffect } from "react";
 import { FileChartColumnIncreasing } from "lucide-react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
+import { ReadingData } from "@/lib/types/readings";
 import { formatSeismicMonitorDate } from "@/lib/utils";
+import { EarthquakeData } from "@/lib/types/earthquake";
 
 import {
   Card,
@@ -14,87 +17,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-} from "@/components/ui/chart";
 import { Button } from "@/components/ui/button";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
-import { useQuery } from "@tanstack/react-query";
-
-const chartConfig = {
-  activity: {
-    label: "Seismic Activity",
-  },
-  siAverage: {
-    label: "SI Average",
-    color: "hsl(var(--chart-1))",
-  },
-  siMaximum: {
-    label: "SI Maximum",
-    color: "hsl(var(--chart-2))",
-  },
-  siMinimum: {
-    label: "SI Minimum",
-    color: "hsl(var(--chart-3))",
-  },
-} satisfies ChartConfig;
-
-const skeletonChartConfig = {
-  activity: {
-    label: "Seismic Activity",
-  },
-  siAverage: {
-    label: "SI Average",
-    color: "#d1d5db",
-  },
-  siMaximum: {
-    label: "SI Maximum",
-    color: "#e5e7eb",
-  },
-  siMinimum: {
-    label: "SI Minimum",
-    color: "#f3f4f6",
-  },
-} satisfies ChartConfig;
-
-const earthquakeChartConfig = {
-  activity: {
-    label: "Earthquake Activity",
-  },
-  magnitude: {
-    label: "Magnitude",
-    color: "hsl(var(--chart-1))",
-  },
-} satisfies ChartConfig;
-
-const skeletonEarthquakeConfig = {
-  activity: {
-    label: "Earthquake Activity",
-  },
-  magnitude: {
-    label: "Magnitude",
-    color: "#e5e7eb",
-  },
-} satisfies ChartConfig;
-
-type ReadingData = {
-  battery: number;
-  createdAt: string;
-  id: string;
-  siAverage: number;
-  siMaximum: number;
-  siMinimum: number;
-  signalStrength: string;
-};
-
-// type EarthquakeData = {
-//   id: string;
-//   createdAt: string;
-//   magnitude: number;
-//   duration: number;
-// };
+import {
+  earthquakeChartConfig,
+  readingChartConfig,
+  skeletonEarthquakeConfig,
+  skeletonReadingChartConfig,
+} from "@/lib/configs/chart";
 
 export default function Dashboard() {
   const [date, setDate] = useState<DateRange | undefined>({
@@ -102,7 +33,7 @@ export default function Dashboard() {
     to: new Date(),
   });
 
-  const { data: readingsData, isLoading } = useQuery({
+  const { data: readingsData, isLoading: readingsDataIsLoading } = useQuery({
     queryKey: ["readings", date],
     queryFn: async () => {
       if (!date?.from && !date?.to) return null;
@@ -129,6 +60,19 @@ export default function Dashboard() {
     enabled: !!(date?.from || date?.to),
   });
 
+  const { data: earthquakesData, isLoading: earthquakeDataIsLoading } =
+    useQuery({
+      queryKey: ["earthquakes"],
+      queryFn: async () => {
+        const response = await fetch(`/api/earthquakes`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch earthquake readings");
+        }
+
+        return response.json();
+      },
+    });
+
   const readings = useMemo(() => {
     return (readingsData?.data as ReadingData[]) || [];
   }, [readingsData?.data]);
@@ -153,7 +97,7 @@ export default function Dashboard() {
   }, [readingsData?.firstDate, persistedFirstDate]);
 
   const chartData = useMemo(() => {
-    if (isLoading) {
+    if (readingsDataIsLoading) {
       return Array.from({ length: 8 }, (_, i) => ({
         time: `${i + 1}:00`,
         fullDateTime: `Loading...`,
@@ -191,10 +135,10 @@ export default function Dashboard() {
       siMinimum: reading.siMinimum,
       battery: reading.battery,
     }));
-  }, [readings, date, isLoading]);
+  }, [readings, date, readingsDataIsLoading]);
 
   const earthquakeHistoryData = useMemo(() => {
-    if (isLoading) {
+    if (earthquakeDataIsLoading) {
       return Array.from({ length: 6 }, (_, i) => {
         const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
         return {
@@ -202,13 +146,23 @@ export default function Dashboard() {
           createdAt: date.toISOString(),
           magnitude: 3.0 + Math.random() * 4.0,
           duration: 10 + Math.random() * 50,
-          time: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+          time: date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          }),
         };
       });
     }
 
-    return [];
-  }, [isLoading]);
+    const earthquakes = (earthquakesData?.data as EarthquakeData[]) || [];
+    return earthquakes.map((earthquake) => ({
+      ...earthquake,
+      time: new Date(earthquake.createdAt).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+    }));
+  }, [earthquakeDataIsLoading, earthquakesData]);
 
   const peakMagnitude = useMemo(() => {
     if (!readings.length) return { value: 0, time: "--" };
@@ -263,7 +217,7 @@ export default function Dashboard() {
         />
         <Button
           className="hidden gap-2 md:flex"
-          disabled={!formatSeismicMonitorDate(date) || isLoading}
+          disabled={!formatSeismicMonitorDate(date) || readingsDataIsLoading}
         >
           <FileChartColumnIncreasing />
           Generate Report
@@ -275,7 +229,7 @@ export default function Dashboard() {
             <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
               <CardTitle>Peak SI Maximum</CardTitle>
               <CardDescription>
-                {isLoading ? (
+                {readingsDataIsLoading ? (
                   <div className="animate-pulse">
                     <div className="h-8 w-16 rounded bg-gray-300"></div>
                   </div>
@@ -305,7 +259,7 @@ export default function Dashboard() {
             <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
               <CardTitle>Average SI Reading</CardTitle>
               <CardDescription>
-                {isLoading ? (
+                {readingsDataIsLoading ? (
                   <div className="animate-pulse">
                     <div className="h-8 w-16 rounded bg-gray-300"></div>
                   </div>
@@ -329,7 +283,7 @@ export default function Dashboard() {
             <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
               <CardTitle>Significant Activity Readings</CardTitle>
               <CardDescription>
-                {isLoading ? (
+                {readingsDataIsLoading ? (
                   <div className="animate-pulse">
                     <div className="h-8 w-16 rounded bg-gray-300"></div>
                   </div>
@@ -359,7 +313,7 @@ export default function Dashboard() {
             <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
               <CardTitle>Peak Activity Time</CardTitle>
               <CardDescription>
-                {isLoading ? (
+                {readingsDataIsLoading ? (
                   <div className="animate-pulse">
                     <div className="h-8 w-16 rounded bg-gray-300"></div>
                   </div>
@@ -398,7 +352,11 @@ export default function Dashboard() {
         </CardHeader>
         <CardContent className="px-2 sm:p-6">
           <ChartContainer
-            config={isLoading ? skeletonChartConfig : chartConfig}
+            config={
+              readingsDataIsLoading
+                ? skeletonReadingChartConfig
+                : readingChartConfig
+            }
             className="aspect-auto h-[250px] w-full"
           >
             <LineChart
@@ -417,7 +375,7 @@ export default function Dashboard() {
                 tickMargin={8}
                 minTickGap={32}
               />
-              {!isLoading && (
+              {!readingsDataIsLoading && (
                 <ChartTooltip
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
@@ -463,21 +421,27 @@ export default function Dashboard() {
               <Line
                 dataKey="siAverage"
                 type="monotone"
-                stroke={isLoading ? "#d1d5db" : `var(--color-siAverage)`}
+                stroke={
+                  readingsDataIsLoading ? "#d1d5db" : `var(--color-siAverage)`
+                }
                 strokeWidth={2}
                 dot={false}
               />
               <Line
                 dataKey="siMaximum"
                 type="monotone"
-                stroke={isLoading ? "#e5e7eb" : `var(--color-siMaximum)`}
+                stroke={
+                  readingsDataIsLoading ? "#e5e7eb" : `var(--color-siMaximum)`
+                }
                 strokeWidth={2}
                 dot={false}
               />
               <Line
                 dataKey="siMinimum"
                 type="monotone"
-                stroke={isLoading ? "#f3f4f6" : `var(--color-siMinimum)`}
+                stroke={
+                  readingsDataIsLoading ? "#f3f4f6" : `var(--color-siMinimum)`
+                }
                 strokeWidth={2}
                 dot={false}
               />
@@ -486,7 +450,7 @@ export default function Dashboard() {
         </CardContent>
       </Card>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-[2fr_1fr]">
-        <Card className="w-full">
+        <Card className="hidden w-full md:block">
           <CardHeader className="mx-4.5 flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
             <div className="flex flex-1 flex-col justify-center gap-1 px-1.5 pt-2">
               <CardTitle>Earthquake History</CardTitle>
@@ -498,7 +462,9 @@ export default function Dashboard() {
           <CardContent className="px-2 sm:p-6">
             <ChartContainer
               config={
-                isLoading ? skeletonEarthquakeConfig : earthquakeChartConfig
+                earthquakeDataIsLoading
+                  ? skeletonEarthquakeConfig
+                  : earthquakeChartConfig
               }
               className="aspect-auto h-[250px] w-full"
             >
@@ -518,7 +484,7 @@ export default function Dashboard() {
                   tickMargin={8}
                   minTickGap={32}
                 />
-                {!isLoading && (
+                {!earthquakeDataIsLoading && (
                   <ChartTooltip
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
@@ -531,13 +497,16 @@ export default function Dashboard() {
                                   Time
                                 </span>
                                 <span className="font-bold">
-                                  {new Date(data.createdAt).toLocaleString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
+                                  {new Date(data.createdAt).toLocaleString(
+                                    "en-US",
+                                    {
+                                      month: "short",
+                                      day: "numeric",
+                                      year: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    },
+                                  )}
                                 </span>
                               </div>
                             </div>
@@ -561,7 +530,25 @@ export default function Dashboard() {
                                 <span className="text-sm">
                                   Duration:{" "}
                                   {typeof data.duration === "number"
-                                    ? `${data.duration.toFixed(0)}s`
+                                    ? (() => {
+                                        const seconds = data.duration;
+                                        if (seconds >= 3600) {
+                                          const hours = Math.floor(
+                                            seconds / 3600,
+                                          );
+                                          const mins = Math.floor(
+                                            (seconds % 3600) / 60,
+                                          );
+                                          const secs = seconds % 60;
+                                          return `${hours}h ${mins}m ${secs}s`;
+                                        } else if (seconds >= 60) {
+                                          const mins = Math.floor(seconds / 60);
+                                          const secs = seconds % 60;
+                                          return `${mins}m ${secs}s`;
+                                        } else {
+                                          return `${seconds}s`;
+                                        }
+                                      })()
                                     : "--"}
                                 </span>
                               </div>
@@ -576,7 +563,9 @@ export default function Dashboard() {
                 <Line
                   dataKey="magnitude"
                   type="monotone"
-                  stroke={isLoading ? "#e5e7eb" : "hsl(var(--chart-1))"}
+                  stroke={
+                    earthquakeDataIsLoading ? "#e5e7eb" : "hsl(var(--chart-1))"
+                  }
                   strokeWidth={2}
                   dot={false}
                 />
@@ -592,7 +581,7 @@ export default function Dashboard() {
                   AI Summary
                 </CardTitle>
                 <CardDescription>
-                  {isLoading ? (
+                  {readingsDataIsLoading ? (
                     <div className="space-y-2">
                       <div className="ai-shimmer h-4 w-full animate-[shimmer_8s_linear_infinite] rounded"></div>
                       <div
@@ -623,7 +612,7 @@ export default function Dashboard() {
               <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
                 <CardTitle>Battery Level</CardTitle>
                 <CardDescription>
-                  {isLoading ? (
+                  {readingsDataIsLoading ? (
                     <div className="animate-pulse">
                       <div className="h-8 w-16 rounded bg-gray-300"></div>
                     </div>
@@ -642,6 +631,129 @@ export default function Dashboard() {
             </CardHeader>
           </Card>
         </div>
+        <Card className="w-full md:hidden">
+          <CardHeader className="mx-4.5 flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
+            <div className="flex flex-1 flex-col justify-center gap-1 px-1.5 pt-2">
+              <CardTitle>Earthquake History</CardTitle>
+              <CardDescription>
+                Historical earthquake events and intensity records over time
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="px-2 sm:p-6">
+            <ChartContainer
+              config={
+                earthquakeDataIsLoading
+                  ? skeletonEarthquakeConfig
+                  : earthquakeChartConfig
+              }
+              className="aspect-auto h-[250px] w-full"
+            >
+              <LineChart
+                accessibilityLayer
+                data={earthquakeHistoryData}
+                margin={{
+                  left: 12,
+                  right: 12,
+                }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="time"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  minTickGap={32}
+                />
+                {!earthquakeDataIsLoading && (
+                  <ChartTooltip
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-background rounded-lg border p-2 shadow-sm">
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="flex flex-col">
+                                <span className="text-muted-foreground text-[0.70rem] uppercase">
+                                  Time
+                                </span>
+                                <span className="font-bold">
+                                  {new Date(data.createdAt).toLocaleString(
+                                    "en-US",
+                                    {
+                                      month: "short",
+                                      day: "numeric",
+                                      year: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    },
+                                  )}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="mt-2 flex flex-col gap-1">
+                              <div className="flex items-center gap-2">
+                                <div
+                                  className="h-2 w-2 rounded-full"
+                                  style={{
+                                    backgroundColor: "hsl(var(--chart-1))",
+                                  }}
+                                />
+                                <span className="text-sm">
+                                  Magnitude:{" "}
+                                  {typeof data.magnitude === "number"
+                                    ? data.magnitude.toFixed(1)
+                                    : "--"}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="h-2 w-2 rounded-full bg-gray-400" />
+                                <span className="text-sm">
+                                  Duration:{" "}
+                                  {typeof data.duration === "number"
+                                    ? (() => {
+                                        const seconds = data.duration;
+                                        if (seconds >= 3600) {
+                                          const hours = Math.floor(
+                                            seconds / 3600,
+                                          );
+                                          const mins = Math.floor(
+                                            (seconds % 3600) / 60,
+                                          );
+                                          const secs = seconds % 60;
+                                          return `${hours}h ${mins}m ${secs}s`;
+                                        } else if (seconds >= 60) {
+                                          const mins = Math.floor(seconds / 60);
+                                          const secs = seconds % 60;
+                                          return `${mins}m ${secs}s`;
+                                        } else {
+                                          return `${seconds}s`;
+                                        }
+                                      })()
+                                    : "--"}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                )}
+                <Line
+                  dataKey="magnitude"
+                  type="monotone"
+                  stroke={
+                    earthquakeDataIsLoading ? "#e5e7eb" : "hsl(var(--chart-1))"
+                  }
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
       </div>
       <div className="flex w-full justify-center md:hidden">
         <Button className="flex gap-2">
