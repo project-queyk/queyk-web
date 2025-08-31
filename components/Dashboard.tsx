@@ -1,5 +1,6 @@
 "use client";
 
+import { Session } from "next-auth";
 import { DateRange } from "react-day-picker";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState, useEffect } from "react";
@@ -11,6 +12,12 @@ import { formatSeismicMonitorDate } from "@/lib/utils";
 import { EarthquakeData } from "@/lib/types/earthquake";
 
 import {
+  earthquakeChartConfig,
+  readingChartConfig,
+  skeletonEarthquakeConfig,
+  skeletonReadingChartConfig,
+} from "@/lib/configs/chart";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -20,18 +27,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
-import {
-  earthquakeChartConfig,
-  readingChartConfig,
-  skeletonEarthquakeConfig,
-  skeletonReadingChartConfig,
-} from "@/lib/configs/chart";
 
-export default function Dashboard() {
+export default function Dashboard({ session }: { session: Session }) {
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(),
     to: new Date(),
   });
+  console.log(session);
 
   const { data: readingsData, isLoading: readingsDataIsLoading } = useQuery({
     queryKey: ["readings", date],
@@ -57,7 +59,7 @@ export default function Dashboard() {
 
       return response.json();
     },
-    enabled: !!(date?.from || date?.to),
+    enabled: !!(date?.from || date?.to) && session.user.role === "admin",
   });
 
   const { data: earthquakesData, isLoading: earthquakeDataIsLoading } =
@@ -78,7 +80,9 @@ export default function Dashboard() {
   }, [readingsData?.data]);
 
   const batteryLevel = readingsData?.batteryLevel || 0;
-  const aiSummary = readingsData?.aiSummary || "";
+  const aiSummary = session.user.role === "admin" 
+    ? (readingsData?.aiSummary || "")
+    : (earthquakesData?.aiSummary || "");
 
   const getBatteryColor = (level: number) => {
     if (level >= 70) return "text-green-500";
@@ -209,246 +213,258 @@ export default function Dashboard() {
 
   return (
     <div className="grid gap-3">
-      <div className="items-center justify-between md:flex">
-        <DatePickerWithRange
-          date={date}
-          onDateChange={setDate}
-          startDate={persistedFirstDate}
-        />
-        <Button
-          className="hidden gap-2 md:flex"
-          disabled={!formatSeismicMonitorDate(date) || readingsDataIsLoading}
-        >
-          <FileChartColumnIncreasing />
-          Generate Report
-        </Button>
-      </div>
-      <div className="grid gap-3 md:flex">
-        <Card className="w-full">
-          <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
-            <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
-              <CardTitle>Peak SI Maximum</CardTitle>
-              <CardDescription>
-                {readingsDataIsLoading ? (
-                  <div className="animate-pulse">
-                    <div className="h-8 w-16 rounded bg-gray-300"></div>
-                  </div>
-                ) : (
-                  <>
-                    <span className="text-primary text-2xl font-semibold">
-                      {formatSeismicMonitorDate(date) && readings.length
-                        ? peakMagnitude.value.toFixed(3)
-                        : "--"}
-                    </span>
-                    <span className="text-muted-foreground ml-2">
-                      {formatSeismicMonitorDate(date) && readings.length
-                        ? `@ ${peakMagnitude.time}`
-                        : ""}
-                    </span>
-                  </>
-                )}
-              </CardDescription>
-              <p className="text-muted-foreground mt-1 text-xs">
-                Highest seismic intensity reading during the selected period
-              </p>
-            </div>
-          </CardHeader>
-        </Card>
-        <Card className="w-full">
-          <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
-            <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
-              <CardTitle>Average SI Reading</CardTitle>
-              <CardDescription>
-                {readingsDataIsLoading ? (
-                  <div className="animate-pulse">
-                    <div className="h-8 w-16 rounded bg-gray-300"></div>
-                  </div>
-                ) : (
-                  <span className="text-primary text-2xl font-semibold">
-                    {formatSeismicMonitorDate(date) && readings.length
-                      ? avgMagnitude
-                      : "--"}
-                  </span>
-                )}
-              </CardDescription>
-              <p className="text-muted-foreground mt-1 text-xs">
-                Mean seismic intensity across all readings for the selected
-                timeframe
-              </p>
-            </div>
-          </CardHeader>
-        </Card>
-        <Card className="w-full">
-          <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
-            <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
-              <CardTitle>Significant Activity Readings</CardTitle>
-              <CardDescription>
-                {readingsDataIsLoading ? (
-                  <div className="animate-pulse">
-                    <div className="h-8 w-16 rounded bg-gray-300"></div>
-                  </div>
-                ) : (
-                  <>
-                    <span className="text-primary text-2xl font-semibold">
-                      {formatSeismicMonitorDate(date) && readings.length
-                        ? significantReadings
-                        : "--"}
-                    </span>
-                    {formatSeismicMonitorDate(date) && readings.length ? (
-                      <span className="text-muted-foreground ml-2">
-                        readings
-                      </span>
-                    ) : null}
-                  </>
-                )}
-              </CardDescription>
-              <p className="text-muted-foreground mt-1 text-xs">
-                Readings where SI Maximum exceeded 1.0
-              </p>
-            </div>
-          </CardHeader>
-        </Card>
-        <Card className="w-full">
-          <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
-            <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
-              <CardTitle>Peak Activity Time</CardTitle>
-              <CardDescription>
-                {readingsDataIsLoading ? (
-                  <div className="animate-pulse">
-                    <div className="h-8 w-16 rounded bg-gray-300"></div>
-                  </div>
-                ) : (
-                  <>
-                    <span className="text-primary text-2xl font-semibold">
-                      {formatSeismicMonitorDate(date) && readings.length
-                        ? peakActivity.value
-                        : "--"}
-                    </span>
-                    <span className="text-muted-foreground ml-2">
-                      {formatSeismicMonitorDate(date) && readings.length
-                        ? `(${peakActivity.siAverage?.toFixed(3)} SI)`
-                        : ""}
-                    </span>
-                  </>
-                )}
-              </CardDescription>
-              <p className="text-muted-foreground mt-1 text-xs">
-                Time with the highest average seismic intensity
-              </p>
-            </div>
-          </CardHeader>
-        </Card>
-      </div>
-      <Card>
-        <CardHeader className="mx-4.5 flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
-          <div className="flex flex-1 flex-col justify-center gap-1 px-1.5 pt-2">
-            <CardTitle>Seismic Activity Monitor</CardTitle>
-            <CardDescription>
-              {formatSeismicMonitorDate(date)
-                ? `Seismic readings for ${formatSeismicMonitorDate(date)} • Data averaged every 5 minutes`
-                : "No seismic readings • Data averaged every 5 minutes"}
-            </CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent className="px-2 sm:p-6">
-          <ChartContainer
-            config={
-              readingsDataIsLoading
-                ? skeletonReadingChartConfig
-                : readingChartConfig
-            }
-            className="aspect-auto h-[250px] w-full"
-          >
-            <LineChart
-              accessibilityLayer
-              data={chartData}
-              margin={{
-                left: 12,
-                right: 12,
-              }}
+      {session.user.role === "admin" ? (
+        <>
+          <div className="items-center justify-between md:flex">
+            <DatePickerWithRange
+              date={date}
+              onDateChange={setDate}
+              startDate={persistedFirstDate}
+            />
+            <Button
+              className="hidden gap-2 md:flex"
+              disabled={
+                !formatSeismicMonitorDate(date) || readingsDataIsLoading
+              }
             >
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="time"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                minTickGap={32}
-              />
-              {!readingsDataIsLoading && (
-                <ChartTooltip
-                  content={({ active, payload }) => {
-                    if (active && payload && payload.length) {
-                      const data = payload[0].payload;
-                      return (
-                        <div className="bg-background rounded-lg border p-2 shadow-sm">
-                          <div className="grid grid-cols-2 gap-2">
-                            <div className="flex flex-col">
-                              <span className="text-muted-foreground text-[0.70rem] uppercase">
-                                Time
-                              </span>
-                              <span className="font-bold">
-                                {data.fullDateTime}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="mt-2 flex flex-col gap-1">
-                            {payload.map((entry, index) => (
-                              <div
-                                key={index}
-                                className="flex items-center gap-2"
-                              >
-                                <div
-                                  className="h-2 w-2 rounded-full"
-                                  style={{ backgroundColor: entry.color }}
-                                />
-                                <span className="text-sm">
-                                  {entry.name}:{" "}
-                                  {typeof entry.value === "number"
-                                    ? entry.value.toFixed(3)
-                                    : "--"}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
+              <FileChartColumnIncreasing />
+              Generate Report
+            </Button>
+          </div>
+          <div className="grid gap-3 md:flex">
+            <Card className="w-full">
+              <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
+                <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
+                  <CardTitle>Peak SI Maximum</CardTitle>
+                  <CardDescription>
+                    {readingsDataIsLoading ? (
+                      <div className="animate-pulse">
+                        <div className="h-8 w-16 rounded bg-gray-300"></div>
+                      </div>
+                    ) : (
+                      <>
+                        <span className="text-primary text-2xl font-semibold">
+                          {formatSeismicMonitorDate(date) && readings.length
+                            ? peakMagnitude.value.toFixed(3)
+                            : "--"}
+                        </span>
+                        <span className="text-muted-foreground ml-2">
+                          {formatSeismicMonitorDate(date) && readings.length
+                            ? `@ ${peakMagnitude.time}`
+                            : ""}
+                        </span>
+                      </>
+                    )}
+                  </CardDescription>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Highest seismic intensity reading during the selected period
+                  </p>
+                </div>
+              </CardHeader>
+            </Card>
+            <Card className="w-full">
+              <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
+                <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
+                  <CardTitle>Average SI Reading</CardTitle>
+                  <CardDescription>
+                    {readingsDataIsLoading ? (
+                      <div className="animate-pulse">
+                        <div className="h-8 w-16 rounded bg-gray-300"></div>
+                      </div>
+                    ) : (
+                      <span className="text-primary text-2xl font-semibold">
+                        {formatSeismicMonitorDate(date) && readings.length
+                          ? avgMagnitude
+                          : "--"}
+                      </span>
+                    )}
+                  </CardDescription>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Mean seismic intensity across all readings for the selected
+                    timeframe
+                  </p>
+                </div>
+              </CardHeader>
+            </Card>
+            <Card className="w-full">
+              <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
+                <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
+                  <CardTitle>Significant Activity Readings</CardTitle>
+                  <CardDescription>
+                    {readingsDataIsLoading ? (
+                      <div className="animate-pulse">
+                        <div className="h-8 w-16 rounded bg-gray-300"></div>
+                      </div>
+                    ) : (
+                      <>
+                        <span className="text-primary text-2xl font-semibold">
+                          {formatSeismicMonitorDate(date) && readings.length
+                            ? significantReadings
+                            : "--"}
+                        </span>
+                        {formatSeismicMonitorDate(date) && readings.length ? (
+                          <span className="text-muted-foreground ml-2">
+                            readings
+                          </span>
+                        ) : null}
+                      </>
+                    )}
+                  </CardDescription>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Readings where SI Maximum exceeded 1.0
+                  </p>
+                </div>
+              </CardHeader>
+            </Card>
+            <Card className="w-full">
+              <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
+                <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
+                  <CardTitle>Peak Activity Time</CardTitle>
+                  <CardDescription>
+                    {readingsDataIsLoading ? (
+                      <div className="animate-pulse">
+                        <div className="h-8 w-16 rounded bg-gray-300"></div>
+                      </div>
+                    ) : (
+                      <>
+                        <span className="text-primary text-2xl font-semibold">
+                          {formatSeismicMonitorDate(date) && readings.length
+                            ? peakActivity.value
+                            : "--"}
+                        </span>
+                        <span className="text-muted-foreground ml-2">
+                          {formatSeismicMonitorDate(date) && readings.length
+                            ? `(${peakActivity.siAverage?.toFixed(3)} SI)`
+                            : ""}
+                        </span>
+                      </>
+                    )}
+                  </CardDescription>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Time with the highest average seismic intensity
+                  </p>
+                </div>
+              </CardHeader>
+            </Card>
+          </div>
+          <Card>
+            <CardHeader className="mx-4.5 flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
+              <div className="flex flex-1 flex-col justify-center gap-1 px-1.5 pt-2">
+                <CardTitle>Seismic Activity Monitor</CardTitle>
+                <CardDescription>
+                  {formatSeismicMonitorDate(date)
+                    ? `Seismic readings for ${formatSeismicMonitorDate(date)} • Data averaged every 5 minutes`
+                    : "No seismic readings • Data averaged every 5 minutes"}
+                </CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent className="px-2 sm:p-6">
+              <ChartContainer
+                config={
+                  readingsDataIsLoading
+                    ? skeletonReadingChartConfig
+                    : readingChartConfig
+                }
+                className="aspect-auto h-[250px] w-full"
+              >
+                <LineChart
+                  accessibilityLayer
+                  data={chartData}
+                  margin={{
+                    left: 12,
+                    right: 12,
                   }}
-                />
-              )}
-              <Line
-                dataKey="siAverage"
-                type="monotone"
-                stroke={
-                  readingsDataIsLoading ? "#d1d5db" : `var(--color-siAverage)`
-                }
-                strokeWidth={2}
-                dot={false}
-              />
-              <Line
-                dataKey="siMaximum"
-                type="monotone"
-                stroke={
-                  readingsDataIsLoading ? "#e5e7eb" : `var(--color-siMaximum)`
-                }
-                strokeWidth={2}
-                dot={false}
-              />
-              <Line
-                dataKey="siMinimum"
-                type="monotone"
-                stroke={
-                  readingsDataIsLoading ? "#f3f4f6" : `var(--color-siMinimum)`
-                }
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
-          </ChartContainer>
-        </CardContent>
-      </Card>
+                >
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="time"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    minTickGap={32}
+                  />
+                  {!readingsDataIsLoading && (
+                    <ChartTooltip
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0].payload;
+                          return (
+                            <div className="bg-background rounded-lg border p-2 shadow-sm">
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="flex flex-col">
+                                  <span className="text-muted-foreground text-[0.70rem] uppercase">
+                                    Time
+                                  </span>
+                                  <span className="font-bold">
+                                    {data.fullDateTime}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="mt-2 flex flex-col gap-1">
+                                {payload.map((entry, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-center gap-2"
+                                  >
+                                    <div
+                                      className="h-2 w-2 rounded-full"
+                                      style={{ backgroundColor: entry.color }}
+                                    />
+                                    <span className="text-sm">
+                                      {entry.name}:{" "}
+                                      {typeof entry.value === "number"
+                                        ? entry.value.toFixed(3)
+                                        : "--"}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                  )}
+                  <Line
+                    dataKey="siAverage"
+                    type="monotone"
+                    stroke={
+                      readingsDataIsLoading
+                        ? "#d1d5db"
+                        : `var(--color-siAverage)`
+                    }
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    dataKey="siMaximum"
+                    type="monotone"
+                    stroke={
+                      readingsDataIsLoading
+                        ? "#e5e7eb"
+                        : `var(--color-siMaximum)`
+                    }
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    dataKey="siMinimum"
+                    type="monotone"
+                    stroke={
+                      readingsDataIsLoading
+                        ? "#f3f4f6"
+                        : `var(--color-siMinimum)`
+                    }
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        </>
+      ) : null}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-[2fr_1fr]">
         <Card className="hidden w-full md:block">
           <CardHeader className="mx-4.5 flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
@@ -607,29 +623,31 @@ export default function Dashboard() {
               </div>
             </CardHeader>
           </Card>
-          <Card className="w-full">
-            <CardHeader className="flex flex-col space-y-0 p-0 sm:flex-row">
-              <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
-                <CardTitle>Battery Level</CardTitle>
-                <CardDescription>
-                  {readingsDataIsLoading ? (
-                    <div className="animate-pulse">
-                      <div className="h-8 w-16 rounded bg-gray-300"></div>
-                    </div>
-                  ) : (
-                    <span
-                      className={`text-2xl font-semibold ${batteryLevel ? getBatteryColor(batteryLevel) : "text-primary"}`}
-                    >
-                      {batteryLevel ? `${batteryLevel}%` : "--"}
-                    </span>
-                  )}
-                </CardDescription>
-                <p className="text-muted-foreground mt-1 text-xs">
-                  Current IoT sensor battery level
-                </p>
-              </div>
-            </CardHeader>
-          </Card>
+          {session.user.role === "admin" ? (
+            <Card className="w-full">
+              <CardHeader className="flex flex-col space-y-0 p-0 sm:flex-row">
+                <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
+                  <CardTitle>Battery Level</CardTitle>
+                  <CardDescription>
+                    {readingsDataIsLoading ? (
+                      <div className="animate-pulse">
+                        <div className="h-8 w-16 rounded bg-gray-300"></div>
+                      </div>
+                    ) : (
+                      <span
+                        className={`text-2xl font-semibold ${batteryLevel ? getBatteryColor(batteryLevel) : "text-primary"}`}
+                      >
+                        {batteryLevel ? `${batteryLevel}%` : "--"}
+                      </span>
+                    )}
+                  </CardDescription>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Current IoT sensor battery level
+                  </p>
+                </div>
+              </CardHeader>
+            </Card>
+          ) : null}
         </div>
         <Card className="w-full md:hidden">
           <CardHeader className="mx-4.5 flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
@@ -755,12 +773,17 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
-      <div className="flex w-full justify-center md:hidden">
-        <Button className="flex gap-2">
-          <FileChartColumnIncreasing />
-          Generate Report
-        </Button>
-      </div>
+      {session.user.role === "admin" ? (
+        <div className="flex w-full justify-center md:hidden">
+          <Button
+            className="flex gap-2"
+            disabled={!formatSeismicMonitorDate(date) || readingsDataIsLoading}
+          >
+            <FileChartColumnIncreasing />
+            Generate Report
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }
