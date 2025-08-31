@@ -1,7 +1,9 @@
 "use server";
 
-import { signIn, signOut } from "@/auth";
 import { Profile } from "next-auth";
+import { signIn, signOut } from "@/auth";
+
+import { BackendUserResponse } from "@/types/auth";
 
 export async function signInAction() {
   await signIn("google", { redirectTo: "/dashboard" });
@@ -15,7 +17,9 @@ export async function signOutRootAction() {
   await signOut({ redirectTo: "/" });
 }
 
-export async function signInBackendAction(profile: Profile) {
+export async function signInBackendAction(
+  profile: Profile,
+): Promise<BackendUserResponse> {
   const userValues = {
     email: profile.email,
     name: profile.name,
@@ -39,7 +43,7 @@ export async function signInBackendAction(profile: Profile) {
     }
 
     const data = await response.json();
-    return Response.json(data);
+    return data;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Backend authentication failed: ${error.message}`);

@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 
+import { UserData } from "./types/auth";
 import { signInBackendAction } from "./lib/auth-actions";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -32,6 +33,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       } catch {
         return false;
       }
+    },
+    async jwt({ token, profile }) {
+      if (profile) {
+        const userData = await signInBackendAction(profile);
+        token.userData = userData.data;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token.userData) {
+        const userData = token.userData as UserData;
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            id: userData.id,
+            role: userData.role,
+            alertNotification: userData.alertNotification,
+            oauthId: userData.oauthId,
+          },
+        };
+      }
+      return session;
     },
   },
   pages: { signIn: "/signin", error: "/error" },
