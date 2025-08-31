@@ -1,5 +1,10 @@
 export const floors = [
   {
+    id: "gymnasium",
+    title: "Gymnasium",
+    imageSrc: "/floor_plans/gymnasium.jpg",
+  },
+  {
     id: "ground",
     title: "Ground Floor",
     imageSrc: "/floor_plans/ground-floor.jpg",
