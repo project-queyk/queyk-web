@@ -76,58 +76,65 @@ export default function EvacuationPlanPage({ session }: { session: Session }) {
     <div className="grid gap-3">
       <div className="flex flex-row items-center justify-between gap-2">
         {session.user.role === "user" ? (
-          <div className="text-foreground/90 space-y-0.5">
-            <div className="text-base font-medium">
-              Earthquake Alert Notifications
+          <>
+            <div className="text-foreground/90 space-y-0.5">
+              <div className="text-base font-medium">
+                Earthquake Alert Notifications
+              </div>
+              <div className="text-sm">
+                Receive email alerts when an earthquake activity is detected.
+              </div>
             </div>
-            <div className="text-sm">
-              Receive email alerts when an earthquake activity is detected.
-            </div>
-          </div>
-        ) : null}
-        <div>
-          <AlertDialog>
-            <AlertDialogTrigger
-              asChild
-              disabled={userDataIsLoading || updateNoficationIsPending}
-              aria-disabled={userDataIsLoading || updateNoficationIsPending}
-            >
-              <div className="cursor-pointer">
-                <Switch
-                  checked={userData ? userData.data.alertNotification : false}
-                  onCheckedChange={() => {}}
-                  className="cursor-pointer"
+
+            <div>
+              <AlertDialog>
+                <AlertDialogTrigger
+                  asChild
                   disabled={userDataIsLoading || updateNoficationIsPending}
                   aria-disabled={userDataIsLoading || updateNoficationIsPending}
-                />
-              </div>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  {userData?.data?.alertNotification
-                    ? "Disable Earthquake Notifications?"
-                    : "Enable Earthquake Notifications?"}
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  {userData?.data?.alertNotification
-                    ? "You will no longer receive email alerts when earthquake activity is detected."
-                    : "You will receive email alerts when earthquake activity is detected."}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => {
-                    handleToggleNotifications();
-                  }}
                 >
-                  Continue
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
+                  <div className="cursor-pointer">
+                    <Switch
+                      checked={
+                        userData ? userData.data.alertNotification : false
+                      }
+                      onCheckedChange={() => {}}
+                      className="cursor-pointer"
+                      disabled={userDataIsLoading || updateNoficationIsPending}
+                      aria-disabled={
+                        userDataIsLoading || updateNoficationIsPending
+                      }
+                    />
+                  </div>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {userData?.data?.alertNotification
+                        ? "Disable Earthquake Notifications?"
+                        : "Enable Earthquake Notifications?"}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {userData?.data?.alertNotification
+                        ? "You will no longer receive email alerts when earthquake activity is detected."
+                        : "You will receive email alerts when earthquake activity is detected."}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        handleToggleNotifications();
+                      }}
+                    >
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </>
+        ) : null}
       </div>
       <div className="flex flex-wrap items-center justify-between gap-2"></div>
       <Card className="w-full">
