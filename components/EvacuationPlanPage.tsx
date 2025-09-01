@@ -104,10 +104,15 @@ export default function EvacuationPlanPage({ session }: { session: Session }) {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogTitle>
+                  {userData?.data?.alertNotification
+                    ? "Disable Earthquake Notifications?"
+                    : "Enable Earthquake Notifications?"}
+                </AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
+                  {userData?.data?.alertNotification
+                    ? "You will no longer receive email alerts when earthquake activity is detected."
+                    : "You will receive email alerts when earthquake activity is detected."}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
