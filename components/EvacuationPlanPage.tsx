@@ -75,14 +75,16 @@ export default function EvacuationPlanPage({ session }: { session: Session }) {
   return (
     <div className="grid gap-3">
       <div className="flex flex-row items-center justify-between gap-2">
-        <div className="text-foreground/90 space-y-0.5">
-          <div className="text-base font-medium">
-            Earthquake Alert Notifications
+        {session.user.role === "user" ? (
+          <div className="text-foreground/90 space-y-0.5">
+            <div className="text-base font-medium">
+              Earthquake Alert Notifications
+            </div>
+            <div className="text-sm">
+              Receive email alerts when an earthquake activity is detected.
+            </div>
           </div>
-          <div className="text-sm">
-            Receive email alerts when an earthquake activity is detected.
-          </div>
-        </div>
+        ) : null}
         <div>
           <AlertDialog>
             <AlertDialogTrigger
