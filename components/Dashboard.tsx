@@ -33,7 +33,6 @@ export default function Dashboard({ session }: { session: Session }) {
     from: new Date(),
     to: new Date(),
   });
-  console.log(session);
 
   const { data: readingsData, isLoading: readingsDataIsLoading } = useQuery({
     queryKey: ["readings", date],
@@ -80,9 +79,10 @@ export default function Dashboard({ session }: { session: Session }) {
   }, [readingsData?.data]);
 
   const batteryLevel = readingsData?.batteryLevel || 0;
-  const aiSummary = session.user.role === "admin" 
-    ? (readingsData?.aiSummary || "")
-    : (earthquakesData?.aiSummary || "");
+  const aiSummary =
+    session.user.role === "admin"
+      ? readingsData?.aiSummary || ""
+      : earthquakesData?.aiSummary || "";
 
   const getBatteryColor = (level: number) => {
     if (level >= 70) return "text-green-500";
