@@ -11,6 +11,8 @@ import {
   type ColumnDef,
 } from "@tanstack/react-table";
 
+import { User, UsersResponse } from "@/lib/types/users";
+
 import {
   Table,
   TableBody,
@@ -29,31 +31,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  profileImage: string;
-  alertNotification: boolean;
-  role: "user" | "admin";
-  oauthId: string;
-  createdAt: Date;
-}
-
-interface UsersResponse {
-  message: string;
-  statusCode: number;
-  data: User[];
-  pagination: {
-    page: number;
-    pageSize: number;
-    total: number;
-    totalPages: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-  };
-}
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function UserManagementPage({ session }: { session: Session }) {
   const queryClient = useQueryClient();
@@ -62,6 +49,45 @@ export default function UserManagementPage({ session }: { session: Session }) {
     pageSize: 10,
   });
   const [globalFilter, setGlobalFilter] = useState("");
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+
+  const handleCancelDelete = () => {
+    setUserToDelete(null);
+    setDeletingUserId(null);
+  };
+
+  const handleDeleteUser = async (user: User) => {
+    if (deletingUserId) {
+      return;
+    }
+
+    setDeletingUserId(user.id);
+
+    try {
+      const response = await fetch(`/api/users/${user.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete user");
+      }
+
+      setUserToDelete(null);
+
+      setTimeout(async () => {
+        await queryClient.invalidateQueries({
+          queryKey: ["users"],
+        });
+        setDeletingUserId(null);
+      }, 100);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Failed to delete user");
+      setUserToDelete(null);
+      setDeletingUserId(null);
+    }
+  };
 
   const columns: ColumnDef<User>[] = [
     {
@@ -152,11 +178,8 @@ export default function UserManagementPage({ session }: { session: Session }) {
       header: "",
       cell: ({ row }) => {
         const user = row.original;
-
-        // Get current user from session
         const currentUserEmail = session?.user?.email;
 
-        // Don't show actions for the current user
         if (user.email === currentUserEmail) {
           return null;
         }
@@ -164,7 +187,15 @@ export default function UserManagementPage({ session }: { session: Session }) {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
+              <Button
+                variant="ghost"
+                className="h-8 w-8 p-0"
+                style={{
+                  position: "relative",
+                  zIndex: 10,
+                  pointerEvents: "auto",
+                }}
+              >
                 <span className="sr-only">Open menu</span>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
@@ -173,8 +204,28 @@ export default function UserManagementPage({ session }: { session: Session }) {
               <DropdownMenuItem
                 onClick={async () => {
                   try {
-                    // Handle role switch
                     const newRole = user.role === "admin" ? "user" : "admin";
+
+                    const queryKey = [
+                      "users",
+                      pagination.pageIndex + 1,
+                      pagination.pageSize,
+                      globalFilter,
+                    ];
+
+                    queryClient.setQueryData(
+                      queryKey,
+                      (oldData: UsersResponse | undefined) => {
+                        if (!oldData) return oldData;
+
+                        return {
+                          ...oldData,
+                          data: oldData.data.map((u) =>
+                            u.id === user.id ? { ...u, role: newRole } : u,
+                          ),
+                        };
+                      },
+                    );
 
                     const response = await fetch(`/api/users/${user.id}/role`, {
                       method: "PATCH",
@@ -188,17 +239,14 @@ export default function UserManagementPage({ session }: { session: Session }) {
 
                     if (!response.ok) {
                       const errorData = await response.json();
+
+                      queryClient.invalidateQueries({ queryKey });
+
                       throw new Error(
                         errorData.error || "Failed to update user role",
                       );
                     }
-
-                    // Invalidate and refetch the users query
-                    await queryClient.invalidateQueries({
-                      queryKey: ["users"],
-                    });
                   } catch (error) {
-                    console.error("Error updating user role:", error);
                     alert(
                       error instanceof Error
                         ? error.message
@@ -214,9 +262,7 @@ export default function UserManagementPage({ session }: { session: Session }) {
               <DropdownMenuItem
                 className="text-destructive"
                 onClick={() => {
-                  // Handle delete user
-                  console.log("Delete user:", user.id);
-                  // TODO: Implement actual delete user API call with confirmation
+                  setUserToDelete(user);
                 }}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
@@ -329,7 +375,21 @@ export default function UserManagementPage({ session }: { session: Session }) {
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        key={cell.id}
+                        className={
+                          cell.column.id === "actions" ? "relative" : ""
+                        }
+                        style={
+                          cell.column.id === "actions"
+                            ? {
+                                overflow: "visible",
+                                position: "relative",
+                                zIndex: 1,
+                              }
+                            : undefined
+                        }
+                      >
                         {typeof cell.column.columnDef.cell === "function"
                           ? cell.column.columnDef.cell(cell.getContext())
                           : cell.getValue() != null
@@ -377,7 +437,14 @@ export default function UserManagementPage({ session }: { session: Session }) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
+            style={{
+              position: "relative",
+              zIndex: 5,
+              pointerEvents: "auto",
+            }}
+            onClick={() => {
+              table.previousPage();
+            }}
             disabled={!canPreviousPage}
           >
             Previous
@@ -385,13 +452,63 @@ export default function UserManagementPage({ session }: { session: Session }) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
+            style={{
+              position: "relative",
+              zIndex: 5,
+              pointerEvents: "auto",
+            }}
+            onClick={() => {
+              table.nextPage();
+            }}
             disabled={!canNextPage}
           >
             Next
           </Button>
         </div>
       </div>
+
+      <AlertDialog
+        open={!!userToDelete}
+        onOpenChange={(open) => {
+          if (!open && !deletingUserId) {
+            setUserToDelete(null);
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {userToDelete?.name}? This action
+              cannot be undone and will permanently remove the user from the
+              system.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => {
+                handleCancelDelete();
+              }}
+              disabled={deletingUserId === userToDelete?.id}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (userToDelete) {
+                  handleDeleteUser(userToDelete);
+                }
+              }}
+              disabled={deletingUserId === userToDelete?.id}
+              className="bg-destructive hover:bg-destructive/90 disabled:opacity-50"
+            >
+              {deletingUserId === userToDelete?.id
+                ? "Deleting..."
+                : "Delete User"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
