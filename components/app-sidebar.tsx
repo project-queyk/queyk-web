@@ -10,10 +10,12 @@ import {
   LogOutIcon,
   MapPin,
   PanelLeftIcon,
+  UserCog,
 } from "lucide-react";
 
 import { signOutAction } from "@/lib/auth-actions";
 
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -26,7 +28,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
 
 const items = [
   {
@@ -44,16 +45,23 @@ const items = [
     url: "/protocols",
     icon: ClipboardList,
   },
-  // {
-  //   title: "User Manual",
-  //   url: "/user-manual",
-  //   icon: BookOpen,
-  // },
+  {
+    title: "User Management",
+    url: "/user-management",
+    icon: UserCog,
+  },
 ];
 
 export function AppSidebar({ session }: { session: Session }) {
   const pathname = usePathname();
   const { toggleSidebar, isMobile } = useSidebar();
+
+  const filteredItems = items.filter((item) => {
+    if (item.title === "User Management") {
+      return session.user?.role === "admin";
+    }
+    return true;
+  });
 
   return (
     <Sidebar className="border-none">
@@ -88,7 +96,7 @@ export function AppSidebar({ session }: { session: Session }) {
           </div>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {filteredItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={pathname === item.url}>
                     <a href={item.url} className="py-6">
