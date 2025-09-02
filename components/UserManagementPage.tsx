@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Session } from "next-auth";
+import { MoreHorizontal, UserCheck } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { MoreHorizontal, Trash2, UserCheck } from "lucide-react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -28,7 +28,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -258,7 +257,7 @@ export default function UserManagementPage({ session }: { session: Session }) {
                 <UserCheck className="mr-2 h-4 w-4" />
                 Switch to {user.role === "admin" ? "User" : "Admin"}
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              {/* <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive"
                 onClick={() => {
@@ -267,7 +266,7 @@ export default function UserManagementPage({ session }: { session: Session }) {
               >
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete user
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
         );
