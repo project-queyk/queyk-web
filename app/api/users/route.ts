@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: Request) {
   const session = await auth();
 
   if (!session) {
@@ -9,13 +9,27 @@ export async function GET() {
   }
 
   try {
-    const response = await fetch(`${process.env.BACKEND_URL}/v1/api/users`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${process.env.ADMIN_TOKEN}`,
-        "Token-Type": "admin",
-      },
+    const { searchParams } = new URL(request.url);
+    const page = searchParams.get("page") || "1";
+    const pageSize = searchParams.get("pageSize") || "10";
+    const name = searchParams.get("name") || "";
+
+    const queryParams = new URLSearchParams({
+      page,
+      pageSize,
+      ...(name && { name }),
     });
+
+    const response = await fetch(
+      `${process.env.BACKEND_URL}/v1/api/users?${queryParams}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${process.env.ADMIN_TOKEN}`,
+          "Token-Type": "admin",
+        },
+      },
+    );
 
     if (!response.ok) {
       return NextResponse.json(
