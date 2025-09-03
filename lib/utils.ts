@@ -8,25 +8,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatSeismicMonitorDate(date: DateRange | undefined) {
-  const today = new Date();
-  const isToday =
-    date?.from &&
-    date.from.getDate() === today.getDate() &&
-    date.from.getMonth() === today.getMonth() &&
-    date.from.getFullYear() === today.getFullYear();
+  if (!date?.from || !date?.to) return "";
 
   const isSameDay =
-    date?.from &&
-    date?.to &&
     date.from.getDate() === date.to.getDate() &&
     date.from.getMonth() === date.to.getMonth() &&
     date.from.getFullYear() === date.to.getFullYear();
-
-  if (isToday && isSameDay) {
-    return "Hourly";
-  }
-
-  if (!date?.from || !date?.to) return "";
 
   if (isSameDay) {
     return format(date.from, "MMMM d, yyyy");
