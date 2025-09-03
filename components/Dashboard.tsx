@@ -10,6 +10,7 @@ import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 import { ReadingData } from "@/lib/types/readings";
 import { formatSeismicMonitorDate } from "@/lib/utils";
 import { EarthquakeData } from "@/lib/types/earthquake";
+import { generateSeismicReport, ReportData } from "@/lib/pdf-generator";
 
 import {
   earthquakeChartConfig,
@@ -169,7 +170,7 @@ export default function Dashboard({ session }: { session: Session }) {
   }, [earthquakeDataIsLoading, earthquakesData]);
 
   const peakMagnitude = useMemo(() => {
-    if (!readings.length) return { value: 0, time: "--" };
+    if (!readings.length) return { value: 0, time: "--", fullDateTime: null };
     const peak = readings.reduce(
       (max, reading) => (reading.siMaximum > max.siMaximum ? reading : max),
       readings[0],
@@ -180,6 +181,7 @@ export default function Dashboard({ session }: { session: Session }) {
         hour: "2-digit",
         minute: "2-digit",
       }),
+      fullDateTime: peak.createdAt,
     };
   }, [readings]);
 
@@ -197,19 +199,43 @@ export default function Dashboard({ session }: { session: Session }) {
   }, [readings]);
 
   const peakActivity = useMemo(() => {
-    if (!readings.length) return { value: "--", time: "--" };
+    if (!readings.length) return { value: "--", siAverage: 0, fullDateTime: null };
     const peak = readings.reduce(
       (max, reading) => (reading.siAverage > max.siAverage ? reading : max),
       readings[0],
     );
     return {
-      value: new Date(peak.createdAt).toLocaleTimeString("en-US", {
+      value: new Date(peak.createdAt).toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
       }),
       siAverage: peak.siAverage,
+      fullDateTime: peak.createdAt,
     };
   }, [readings]);
+
+  const handleGenerateReport = () => {
+    if (!readings.length || !formatSeismicMonitorDate(date)) {
+      return;
+    }
+
+    const reportData: ReportData = {
+      readings,
+      dateRange: formatSeismicMonitorDate(date) || "",
+      peakMagnitude,
+      avgMagnitude,
+      significantReadings,
+      peakActivity,
+      batteryLevel:
+        readings.length > 0 ? readings[readings.length - 1].battery : 0,
+      aiSummary: `This report contains ${readings.length} seismic readings collected every 5 minutes from IoT sensors. Peak seismic intensity of ${peakMagnitude.value.toFixed(3)} SI was recorded at ${peakMagnitude.time}. ${significantReadings} readings exceeded the significant activity threshold of 1.0 SI, indicating ${significantReadings > 0 ? "notable seismic activity" : "minimal seismic activity"} during this period.`,
+    };
+
+    generateSeismicReport(reportData);
+  };
 
   return (
     <div className="grid gap-3">
@@ -226,6 +252,7 @@ export default function Dashboard({ session }: { session: Session }) {
               disabled={
                 !formatSeismicMonitorDate(date) || readingsDataIsLoading
               }
+              onClick={handleGenerateReport}
             >
               <FileChartColumnIncreasing />
               Generate Report
@@ -778,6 +805,7 @@ export default function Dashboard({ session }: { session: Session }) {
           <Button
             className="flex gap-2"
             disabled={!formatSeismicMonitorDate(date) || readingsDataIsLoading}
+            onClick={handleGenerateReport}
           >
             <FileChartColumnIncreasing />
             Generate Report
