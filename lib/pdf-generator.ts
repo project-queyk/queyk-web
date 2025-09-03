@@ -166,7 +166,6 @@ export function generateSeismicReport(data: ReportData): void {
         "Peak Activity Time",
         `${data.peakActivity.value}${data.peakActivity.siAverage ? ` (${data.peakActivity.siAverage.toFixed(3)} SI)` : ""}`,
       ],
-      ["Battery Level", `${data.batteryLevel}%`],
     ];
 
     autoTable(doc, {
