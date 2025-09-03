@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Session } from "next-auth";
-import { MoreHorizontal, UserCheck } from "lucide-react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Bell, BellOff, MoreHorizontal, UserCheck } from "lucide-react";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   useReactTable,
   getCoreRowModel,
@@ -55,6 +55,35 @@ export default function UserManagementPage({ session }: { session: Session }) {
     setUserToDelete(null);
     setDeletingUserId(null);
   };
+
+  const toggleNotification = useMutation({
+    mutationFn: async ({
+      userId,
+      currentValue,
+    }: {
+      userId: string;
+      currentValue: boolean;
+    }) => {
+      const response = await fetch(`/api/users/${userId}/notification`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          alertNotification: !currentValue,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || "Failed to update notification preference",
+        );
+      }
+
+      return response.json();
+    },
+  });
 
   const handleDeleteUser = async (user: User) => {
     if (deletingUserId) {
@@ -256,6 +285,64 @@ export default function UserManagementPage({ session }: { session: Session }) {
               >
                 <UserCheck className="mr-2 h-4 w-4" />
                 Switch to {user.role === "admin" ? "User" : "Admin"}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={async () => {
+                  try {
+                    const newNotificationValue = !user.alertNotification;
+
+                    const queryKey = [
+                      "users",
+                      pagination.pageIndex + 1,
+                      pagination.pageSize,
+                      globalFilter,
+                    ];
+
+                    queryClient.setQueryData(
+                      queryKey,
+                      (oldData: UsersResponse | undefined) => {
+                        if (!oldData) return oldData;
+
+                        return {
+                          ...oldData,
+                          data: oldData.data.map((u) =>
+                            u.id === user.id
+                              ? {
+                                  ...u,
+                                  alertNotification: newNotificationValue,
+                                }
+                              : u,
+                          ),
+                        };
+                      },
+                    );
+
+                    toggleNotification.mutate(
+                      {
+                        userId: user.id,
+                        currentValue: user.alertNotification,
+                      },
+                      {
+                        onError: () => {
+                          queryClient.invalidateQueries({ queryKey });
+                        },
+                      },
+                    );
+                  } catch (error) {
+                    alert(
+                      error instanceof Error
+                        ? error.message
+                        : "Failed to update notification preference",
+                    );
+                  }
+                }}
+              >
+                {user.alertNotification ? (
+                  <Bell className="mr-2 h-4 w-4" />
+                ) : (
+                  <BellOff className="mr-2 h-4 w-4" />
+                )}
+                {user.alertNotification ? "Disable" : "Enable"} Notifications
               </DropdownMenuItem>
               {/* <DropdownMenuSeparator />
               <DropdownMenuItem
