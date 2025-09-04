@@ -199,7 +199,8 @@ export default function Dashboard({ session }: { session: Session }) {
   }, [readings]);
 
   const peakActivity = useMemo(() => {
-    if (!readings.length) return { value: "--", siAverage: 0, fullDateTime: null };
+    if (!readings.length)
+      return { value: "--", siAverage: 0, fullDateTime: null };
     const peak = readings.reduce(
       (max, reading) => (reading.siAverage > max.siAverage ? reading : max),
       readings[0],
@@ -355,13 +356,28 @@ export default function Dashboard({ session }: { session: Session }) {
                     ) : (
                       <>
                         <span className="text-primary text-2xl font-semibold">
-                          {formatSeismicMonitorDate(date) && readings.length
-                            ? peakActivity.value
+                          {formatSeismicMonitorDate(date) &&
+                          readings.length &&
+                          peakActivity.fullDateTime
+                            ? new Date(
+                                peakActivity.fullDateTime,
+                              ).toLocaleTimeString("en-US", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
                             : "--"}
                         </span>
                         <span className="text-muted-foreground ml-2">
-                          {formatSeismicMonitorDate(date) && readings.length
-                            ? `(${peakActivity.siAverage?.toFixed(3)} SI)`
+                          {formatSeismicMonitorDate(date) &&
+                          readings.length &&
+                          peakActivity.fullDateTime
+                            ? `@ ${new Date(
+                                peakActivity.fullDateTime,
+                              ).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })} (${peakActivity.siAverage?.toFixed(3)} SI)`
                             : ""}
                         </span>
                       </>
