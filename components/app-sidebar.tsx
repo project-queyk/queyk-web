@@ -57,9 +57,10 @@ export function AppSidebar({ session }: { session: Session }) {
   const { toggleSidebar, isMobile } = useSidebar();
 
   const filteredItems = items.filter((item) => {
-    if (item.title === "User Management") {
+    if (item.url === "/user-management" || item.url === "/dashboard") {
       return session.user?.role === "admin";
     }
+
     return true;
   });
 

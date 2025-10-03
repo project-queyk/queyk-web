@@ -16,5 +16,7 @@ export default async function Page() {
 
   if (!session) return redirect("/signin");
 
+  if (session.user.role !== "admin") return redirect("/evacuation-plan");
+
   return <Dashboard session={session} />;
 }
