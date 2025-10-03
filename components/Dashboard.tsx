@@ -4,7 +4,7 @@ import { Session } from "next-auth";
 import { DateRange } from "react-day-picker";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState, useEffect } from "react";
-import { FileChartColumnIncreasing } from "lucide-react";
+import { FileChartColumnIncreasing, Info } from "lucide-react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
 import { ReadingData } from "@/lib/types/readings";
@@ -25,6 +25,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
@@ -260,101 +265,231 @@ export default function Dashboard({ session }: { session: Session }) {
             </Button>
           </div>
           <div className="grid gap-3 md:flex">
-            <Card className="w-full">
-              <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
+            <Card className="flex w-full">
+              <CardHeader className="flex flex-col items-stretch space-y-0 p-0">
                 <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
-                  <CardTitle>Peak SI Maximum</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="relative mb-2">
+                    <p>Peak SI Maximum</p>
+                    <Tooltip>
+                      <TooltipTrigger className="absolute top-0 right-0 z-10">
+                        <Info className="size-4" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          Highest seismic intensity reading during the selected
+                          period
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </CardTitle>
+                  <CardDescription className="flex w-full items-center justify-between">
                     {readingsDataIsLoading ? (
                       <div className="animate-pulse">
                         <div className="h-8 w-16 rounded bg-gray-300"></div>
                       </div>
                     ) : (
-                      <>
+                      <div className="flex flex-col">
                         <span className="text-primary text-2xl font-semibold">
                           {formatSeismicMonitorDate(date) && readings.length
                             ? peakMagnitude.value.toFixed(3)
                             : "--"}
                         </span>
-                        <span className="text-muted-foreground ml-2">
+                        <span className="text-muted-foreground block">
                           {formatSeismicMonitorDate(date) && readings.length
-                            ? `@ ${peakMagnitude.time}`
-                            : ""}
+                            ? `at ${peakMagnitude.time}`
+                            : "No data"}
                         </span>
-                      </>
+                      </div>
+                    )}
+                    {readingsDataIsLoading ? (
+                      <div className="h-16 w-24 animate-pulse rounded bg-gray-200 pt-4"></div>
+                    ) : (
+                      <ChartContainer
+                        config={{
+                          siMaximum: {
+                            label: "SI Maximum",
+                            color: "hsl(var(--chart-2))",
+                          },
+                        }}
+                        className="h-16 w-24"
+                      >
+                        <LineChart
+                          data={chartData.slice(-7)}
+                          margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+                        >
+                          <Line
+                            type="stepAfter"
+                            dataKey="siMaximum"
+                            stroke="hsl(var(--chart-2))"
+                            strokeWidth={2}
+                            dot={false}
+                            isAnimationActive={false}
+                          />
+                        </LineChart>
+                      </ChartContainer>
                     )}
                   </CardDescription>
-                  <p className="text-muted-foreground mt-1 text-xs">
-                    Highest seismic intensity reading during the selected period
-                  </p>
                 </div>
               </CardHeader>
             </Card>
-            <Card className="w-full">
-              <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
+            <Card className="flex w-full">
+              <CardHeader className="flex flex-col items-stretch space-y-0 p-0">
                 <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
-                  <CardTitle>Average SI Reading</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="relative mb-2">
+                    <p>Average SI Reading</p>
+                    <Tooltip>
+                      <TooltipTrigger className="absolute top-0 right-0 z-10">
+                        <Info className="size-4" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          Mean seismic intensity across all readings for the
+                          selected timeframe
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </CardTitle>
+                  <CardDescription className="flex w-full items-center justify-between">
                     {readingsDataIsLoading ? (
                       <div className="animate-pulse">
                         <div className="h-8 w-16 rounded bg-gray-300"></div>
                       </div>
                     ) : (
-                      <span className="text-primary text-2xl font-semibold">
-                        {formatSeismicMonitorDate(date) && readings.length
-                          ? avgMagnitude
-                          : "--"}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-primary text-2xl font-semibold">
+                          {formatSeismicMonitorDate(date) && readings.length
+                            ? avgMagnitude
+                            : "--"}
+                        </span>
+                        <span className="text-muted-foreground block">
+                          {formatSeismicMonitorDate(date) && readings.length
+                            ? `across ${readings.length} readings`
+                            : "No data"}
+                        </span>
+                      </div>
+                    )}
+                    {readingsDataIsLoading ? (
+                      <div className="h-16 w-24 animate-pulse rounded bg-gray-200 pt-4"></div>
+                    ) : (
+                      <ChartContainer
+                        config={{
+                          siAverage: {
+                            label: "SI Average",
+                            color: "hsl(var(--chart-1))",
+                          },
+                        }}
+                        className="h-16 w-24"
+                      >
+                        <LineChart
+                          data={chartData.slice(-7)}
+                          margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+                        >
+                          <Line
+                            type="basis"
+                            dataKey="siAverage"
+                            stroke="hsl(var(--chart-1))"
+                            strokeWidth={1.5}
+                            dot={false}
+                            isAnimationActive={false}
+                          />
+                        </LineChart>
+                      </ChartContainer>
                     )}
                   </CardDescription>
-                  <p className="text-muted-foreground mt-1 text-xs">
-                    Mean seismic intensity across all readings for the selected
-                    timeframe
-                  </p>
                 </div>
               </CardHeader>
             </Card>
-            <Card className="w-full">
-              <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
+            <Card className="flex w-full">
+              <CardHeader className="flex flex-col items-stretch space-y-0 p-0">
                 <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
-                  <CardTitle>Significant Activity Readings</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="relative mb-2">
+                    <p>Significant Activity Readings</p>
+                    <Tooltip>
+                      <TooltipTrigger className="absolute top-0 right-0 z-10">
+                        <Info className="size-4" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Readings where SI Maximum exceeded 1.0</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </CardTitle>
+                  <CardDescription className="flex w-full items-center justify-between">
                     {readingsDataIsLoading ? (
                       <div className="animate-pulse">
                         <div className="h-8 w-16 rounded bg-gray-300"></div>
                       </div>
                     ) : (
-                      <>
+                      <div className="flex flex-col">
                         <span className="text-primary text-2xl font-semibold">
                           {formatSeismicMonitorDate(date) && readings.length
                             ? significantReadings
                             : "--"}
                         </span>
-                        {formatSeismicMonitorDate(date) && readings.length ? (
-                          <span className="text-muted-foreground ml-2">
-                            readings
-                          </span>
-                        ) : null}
-                      </>
+                        <span className="text-muted-foreground block">
+                          {formatSeismicMonitorDate(date) && readings.length
+                            ? `readings above threshold`
+                            : "No data"}
+                        </span>
+                      </div>
+                    )}
+                    {readingsDataIsLoading ? (
+                      <div className="h-16 w-24 animate-pulse rounded bg-gray-200 pt-4"></div>
+                    ) : (
+                      <ChartContainer
+                        config={{
+                          significant: {
+                            label: "Significant Readings",
+                            color: "hsl(var(--chart-3))",
+                          },
+                        }}
+                        className="h-16 w-24"
+                      >
+                        <LineChart
+                          data={chartData.slice(-7).map((item) => {
+                            // Count readings above threshold for each day
+                            const isSignificant = item.siMaximum > 1.0;
+                            return {
+                              ...item,
+                              significant: isSignificant ? 1 : 0,
+                            };
+                          })}
+                          margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+                        >
+                          <Line
+                            type="monotone"
+                            dataKey="significant"
+                            stroke="hsl(var(--chart-3))"
+                            strokeWidth={1.5}
+                            dot={true}
+                          />
+                        </LineChart>
+                      </ChartContainer>
                     )}
                   </CardDescription>
-                  <p className="text-muted-foreground mt-1 text-xs">
-                    Readings where SI Maximum exceeded 1.0
-                  </p>
                 </div>
               </CardHeader>
             </Card>
-            <Card className="w-full">
-              <CardHeader className="flex flex-col items-stretch space-y-0 p-0 sm:flex-row">
+            <Card className="flex w-full">
+              <CardHeader className="flex flex-col items-stretch space-y-0 p-0">
                 <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
-                  <CardTitle>Peak Activity Time</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="relative mb-2">
+                    <p>Peak Activity Time</p>
+                    <Tooltip>
+                      <TooltipTrigger className="absolute top-0 right-0 z-10">
+                        <Info className="size-4" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Time with the highest average seismic intensity</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </CardTitle>
+                  <CardDescription className="flex w-full items-center justify-between">
                     {readingsDataIsLoading ? (
                       <div className="animate-pulse">
                         <div className="h-8 w-16 rounded bg-gray-300"></div>
                       </div>
                     ) : (
-                      <>
+                      <div className="flex flex-col">
                         <span className="text-primary text-2xl font-semibold">
                           {formatSeismicMonitorDate(date) &&
                           readings.length &&
@@ -367,25 +502,59 @@ export default function Dashboard({ session }: { session: Session }) {
                               })
                             : "--"}
                         </span>
-                        <span className="text-muted-foreground ml-2">
+                        <span className="text-muted-foreground block">
                           {formatSeismicMonitorDate(date) &&
                           readings.length &&
                           peakActivity.fullDateTime
-                            ? `@ ${new Date(
+                            ? `${new Date(
                                 peakActivity.fullDateTime,
                               ).toLocaleDateString("en-US", {
                                 month: "short",
                                 day: "numeric",
                                 year: "numeric",
                               })} (${peakActivity.siAverage?.toFixed(3)} SI)`
-                            : ""}
+                            : "No data"}
                         </span>
-                      </>
+                      </div>
+                    )}
+                    {readingsDataIsLoading ? (
+                      <div className="h-16 w-24 animate-pulse rounded bg-gray-200 pt-4"></div>
+                    ) : (
+                      <ChartContainer
+                        config={{
+                          activityTime: {
+                            label: "Activity Intensity",
+                            color: "hsl(var(--chart-4))",
+                          },
+                        }}
+                        className="h-16 w-24"
+                      >
+                        <LineChart
+                          data={chartData.slice(-7).map((item) => {
+                            // Mark the peak activity point
+                            return {
+                              ...item,
+                              activityTime: item.siAverage,
+                              isPeakTime:
+                                peakActivity.fullDateTime &&
+                                new Date(item.fullDateTime).getTime() ===
+                                  new Date(peakActivity.fullDateTime).getTime(),
+                            };
+                          })}
+                          margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+                        >
+                          <Line
+                            type="monotone"
+                            dataKey="activityTime"
+                            stroke="hsl(var(--chart-4))"
+                            strokeWidth={1.5}
+                            dot={false}
+                            isAnimationActive={false}
+                          />
+                        </LineChart>
+                      </ChartContainer>
                     )}
                   </CardDescription>
-                  <p className="text-muted-foreground mt-1 text-xs">
-                    Time with the highest average seismic intensity
-                  </p>
                 </div>
               </CardHeader>
             </Card>
