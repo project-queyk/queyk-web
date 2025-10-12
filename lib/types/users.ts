@@ -4,6 +4,8 @@ export interface User {
   email: string;
   profileImage: string;
   alertNotification: boolean;
+  pushNotification: boolean;
+  expoPushToken: string | null;
   role: "user" | "admin";
   oauthId: string;
   createdAt: Date;
