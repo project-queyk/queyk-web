@@ -228,6 +228,13 @@ export default function Dashboard({ session }: { session: Session }) {
     endDate?: string,
   ) {
     try {
+      const now = new Date();
+      const timestamp = now
+        .toISOString()
+        .replace("T", "_")
+        .replace(/:/g, "-")
+        .split(".")[0];
+
       const pdfBlob = new Blob(
         [Uint8Array.from(atob(pdfBase64), (c) => c.charCodeAt(0))],
         { type: "application/pdf" },
@@ -239,8 +246,10 @@ export default function Dashboard({ session }: { session: Session }) {
 
       const filename =
         startDate && endDate
-          ? `seismic-report-${startDate.split("T")[0]}-to-${endDate.split("T")[0]}.pdf`
-          : "seismic-report.pdf";
+          ? `seismic-report-${startDate.split("T")[0]}-to-${
+              endDate.split("T")[0]
+            }_${timestamp}.pdf`
+          : `seismic-report_${timestamp}.pdf`;
 
       link.download = filename;
 
