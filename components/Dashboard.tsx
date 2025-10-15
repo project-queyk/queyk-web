@@ -229,11 +229,16 @@ export default function Dashboard({ session }: { session: Session }) {
   ) {
     try {
       const now = new Date();
-      const timestamp = now
-        .toISOString()
-        .replace("T", "_")
-        .replace(/:/g, "-")
-        .split(".")[0];
+      const pad = (n: number) => n.toString().padStart(2, "0");
+
+      const year = now.getFullYear();
+      const month = pad(now.getMonth() + 1);
+      const day = pad(now.getDate());
+      const hours = pad(now.getHours());
+      const minutes = pad(now.getMinutes());
+      const seconds = pad(now.getSeconds());
+
+      const timestamp = `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
 
       const pdfBlob = new Blob(
         [Uint8Array.from(atob(pdfBase64), (c) => c.charCodeAt(0))],
