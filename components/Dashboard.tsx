@@ -10,7 +10,6 @@ import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 import { ReadingData } from "@/lib/types/readings";
 import { formatSeismicMonitorDate } from "@/lib/utils";
 import { EarthquakeData } from "@/lib/types/earthquake";
-import { generateSeismicReport, ReportData } from "@/lib/pdf-generator";
 
 import {
   earthquakeChartConfig,
@@ -222,26 +221,6 @@ export default function Dashboard({ session }: { session: Session }) {
       fullDateTime: peak.createdAt,
     };
   }, [readings]);
-
-  const handleGenerateReport = () => {
-    if (!readings.length || !formatSeismicMonitorDate(date)) {
-      return;
-    }
-
-    const reportData: ReportData = {
-      readings,
-      dateRange: formatSeismicMonitorDate(date) || "",
-      peakMagnitude,
-      avgMagnitude,
-      significantReadings,
-      peakActivity,
-      batteryLevel:
-        readings.length > 0 ? readings[readings.length - 1].battery : 0,
-      aiSummary: `This report contains ${readings.length} seismic readings collected every 5 minutes from IoT sensors. Peak seismic intensity of ${peakMagnitude.value.toFixed(3)} SI was recorded at ${peakMagnitude.time}. ${significantReadings} readings exceeded the significant activity threshold of 1.0 SI, indicating ${significantReadings > 0 ? "notable seismic activity" : "minimal seismic activity"} during this period.`,
-    };
-
-    generateSeismicReport(reportData);
-  };
 
   function downloadReport(
     pdfBase64: string,
@@ -1035,7 +1014,13 @@ export default function Dashboard({ session }: { session: Session }) {
           <Button
             className="flex gap-2"
             disabled={!formatSeismicMonitorDate(date) || readingsDataIsLoading}
-            onClick={handleGenerateReport}
+            onClick={() =>
+              downloadReport(
+                readingsData.pdfBase64,
+                date?.from?.toISOString(),
+                date?.to?.toISOString(),
+              )
+            }
           >
             <FileChartColumnIncreasing />
             Generate Report
