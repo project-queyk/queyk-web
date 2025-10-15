@@ -243,6 +243,45 @@ export default function Dashboard({ session }: { session: Session }) {
     generateSeismicReport(reportData);
   };
 
+  function downloadReport(
+    pdfBase64: string,
+    startDate?: string,
+    endDate?: string,
+  ) {
+    try {
+      const pdfBlob = new Blob(
+        [Uint8Array.from(atob(pdfBase64), (c) => c.charCodeAt(0))],
+        { type: "application/pdf" },
+      );
+
+      const url = URL.createObjectURL(pdfBlob);
+      const link = document.createElement("a");
+      link.href = url;
+
+      const filename =
+        startDate && endDate
+          ? `seismic-report-${startDate.split("T")[0]}-to-${endDate.split("T")[0]}.pdf`
+          : "seismic-report.pdf";
+
+      link.download = filename;
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+    } catch {
+      try {
+        const pdfBlob = new Blob(
+          [Uint8Array.from(atob(pdfBase64), (c) => c.charCodeAt(0))],
+          { type: "application/pdf" },
+        );
+        const url = URL.createObjectURL(pdfBlob);
+        window.open(url, "_blank");
+      } catch {}
+    }
+  }
+
   return (
     <div className="grid gap-3">
       {session.user.role === "admin" ? (
@@ -258,7 +297,13 @@ export default function Dashboard({ session }: { session: Session }) {
               disabled={
                 !formatSeismicMonitorDate(date) || readingsDataIsLoading
               }
-              onClick={handleGenerateReport}
+              onClick={() =>
+                downloadReport(
+                  readingsData.pdfBase64,
+                  date?.from?.toISOString(),
+                  date?.to?.toISOString(),
+                )
+              }
             >
               <FileChartColumnIncreasing />
               Generate Report
