@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 
 import "./globals.css";
@@ -10,18 +10,27 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Queyk",
     default: "Queyk",
+    template: "%s | Queyk",
   },
   description: "An open-source earthquake early warning system.",
   metadataBase: new URL("https://www.queyk.com"),
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Queyk",
+  },
+  formatDetection: {
+    telephone: false,
+  },
   openGraph: {
     type: "website",
+    siteName: "Queyk",
     url: "https://www.queyk.com",
     title: "Queyk - An open-source earthquake early warning system.",
     description:
       "Earthquake monitoring and early warning system. Get alerts, track seismic activity, and stay prepared with our open-source platform.",
-    siteName: "Queyk",
     images: [
       {
         url: "https://www.queyk.com/og.png",
@@ -30,6 +39,19 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary",
+    title: {
+      default: "Queyk",
+      template: "%s | Queyk",
+    },
+    description:
+      "Earthquake monitoring and early warning system. Get alerts, track seismic activity, and stay prepared with our open-source platform.",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#f1f3f5",
 };
 
 export default function RootLayout({
