@@ -13,6 +13,7 @@ import {
   MapPin,
   Shield,
 } from "lucide-react";
+import { FaAndroid } from "react-icons/fa";
 
 import { members } from "@/lib/members";
 import { signOutRootAction } from "@/lib/auth-actions";
@@ -236,13 +237,13 @@ export default function LandingPage({ session }: { session: Session | null }) {
             <Button className="cursor-pointer font-semibold" asChild>
               <Link href="/dashboard">Get started</Link>
             </Button>
-            <Button
-              className="cursor-pointer font-semibold"
-              variant="outline"
-              asChild
-            >
-              <a href="https://github.com/project-queyk" target="_blank">
-                View on GitHub
+            <Button className="cursor-pointer font-semibold" variant="outline">
+              <FaAndroid className="size-4" />
+              <a
+                href="https://github.com/project-queyk/queyk-mobile/releases"
+                target="_blank"
+              >
+                Download for Android
               </a>
             </Button>
           </motion.div>
@@ -529,11 +530,13 @@ export default function LandingPage({ session }: { session: Session | null }) {
       >
         <div className="space-y-2">
           <div>
-            <Link href="/privacy" className="hover:text-gray-700 underline">
+            <Link href="/privacy" className="underline hover:text-gray-700">
               Privacy Policy
             </Link>
           </div>
-          <p>© {new Date().getFullYear()} Queyk Project - All Rights Reserved</p>
+          <p>
+            © {new Date().getFullYear()} Queyk Project - All Rights Reserved
+          </p>
         </div>
       </motion.footer>
     </>
