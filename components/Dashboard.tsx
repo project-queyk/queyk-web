@@ -279,14 +279,15 @@ export default function Dashboard({ session }: { session: Session }) {
     <div className="grid gap-3">
       {session.user.role === "admin" ? (
         <>
-          <div className="items-center justify-between md:flex">
+          <div className="flex items-center justify-between">
             <DatePickerWithRange
               date={date}
               onDateChange={setDate}
               startDate={persistedFirstDate}
+              disabled={readingsDataIsLoading}
             />
             <Button
-              className="hidden gap-2 md:flex"
+              className="flex gap-2"
               disabled={
                 !formatSeismicMonitorDate(date) || readingsDataIsLoading
               }
@@ -299,7 +300,7 @@ export default function Dashboard({ session }: { session: Session }) {
               }
             >
               <FileChartColumnIncreasing />
-              Generate Report
+              Generate
             </Button>
           </div>
           <div className="grid gap-3 md:flex">
@@ -1023,24 +1024,6 @@ export default function Dashboard({ session }: { session: Session }) {
           </CardContent>
         </Card>
       </div>
-      {session.user.role === "admin" ? (
-        <div className="flex w-full justify-center md:hidden">
-          <Button
-            className="flex gap-2"
-            disabled={!formatSeismicMonitorDate(date) || readingsDataIsLoading}
-            onClick={() =>
-              downloadReport(
-                readingsData.pdfBase64,
-                date?.from?.toISOString(),
-                date?.to?.toISOString(),
-              )
-            }
-          >
-            <FileChartColumnIncreasing />
-            Generate Report
-          </Button>
-        </div>
-      ) : null}
     </div>
   );
 }

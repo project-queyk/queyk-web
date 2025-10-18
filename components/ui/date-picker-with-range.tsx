@@ -19,11 +19,13 @@ export function DatePickerWithRange({
   date,
   onDateChange,
   startDate,
+  disabled = false,
 }: {
   className?: React.HTMLAttributes<HTMLDivElement>;
   date: DateRange | undefined;
   onDateChange: (date: DateRange | undefined) => void;
   startDate?: Date;
+  disabled?: boolean;
 }) {
   return (
     <div className={cn("grid gap-2", className)}>
@@ -33,9 +35,11 @@ export function DatePickerWithRange({
             id="date"
             variant={"outline"}
             className={cn(
-              "w-[300px] justify-start text-left font-normal",
+              "w-[240px] justify-start text-left font-normal",
               !date && "text-muted-foreground",
             )}
+            disabled={disabled}
+            aria-disabled={disabled}
           >
             <CalendarIcon />
             {date?.from ? (
