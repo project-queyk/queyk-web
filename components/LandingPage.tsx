@@ -13,7 +13,7 @@ import {
   MapPin,
   Shield,
 } from "lucide-react";
-import { FaAndroid } from "react-icons/fa";
+import { FaGooglePlay } from "react-icons/fa";
 
 import { members } from "@/lib/members";
 import { signOutRootAction } from "@/lib/auth-actions";
@@ -237,13 +237,20 @@ export default function LandingPage({ session }: { session: Session | null }) {
             <Button className="cursor-pointer font-semibold" asChild>
               <Link href="/dashboard">Get started</Link>
             </Button>
-            <Button className="cursor-pointer font-semibold" variant="outline">
-              <FaAndroid className="size-4" />
+            <Button
+              className="cursor-pointer font-semibold"
+              variant="outline"
+              asChild
+            >
               <a
-                href="https://github.com/project-queyk/queyk-mobile/releases"
+                href="https://play.google.com/store/apps/details?id=com.luiscabantac.Queyk"
                 target="_blank"
               >
-                Download for Android
+                <FaGooglePlay className="size-4" />
+                <div className="grid">
+                  <span className="text-[9px]">Get it on</span>
+                  <p>Google Play</p>
+                </div>
               </a>
             </Button>
           </motion.div>
