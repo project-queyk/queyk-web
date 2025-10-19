@@ -11,10 +11,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  turbo: {
-    loaders: {},
-    plugins: [],
-  },
 };
 
 const withPWA = withPWAInit({
