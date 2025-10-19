@@ -5,6 +5,7 @@ import { Session } from "next-auth";
 import { usePathname } from "next/navigation";
 import {
   AlignLeft,
+  CircleUserRound,
   ClipboardList,
   LayoutDashboard,
   LogOutIcon,
@@ -49,6 +50,11 @@ const items = [
     title: "User Management",
     url: "/user-management",
     icon: UserCog,
+  },
+  {
+    title: "Profile",
+    url: "/profile",
+    icon: CircleUserRound,
   },
 ];
 

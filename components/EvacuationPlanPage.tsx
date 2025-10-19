@@ -1,13 +1,10 @@
 "use client";
 
 import { Download } from "lucide-react";
-import { Session } from "next-auth";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { safetyGuidelines } from "@/lib/safety-guidelines";
 
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import MobileFloorPlans from "@/components/MobileFloorPlans";
 import DesktopFloorPlans from "@/components/DesktopFloorPlans";
 import {
@@ -17,120 +14,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
-export default function EvacuationPlanPage({ session }: { session: Session }) {
-  const queryClient = useQueryClient();
-
-  const { data: userData, isLoading: userDataIsLoading } = useQuery({
-    queryKey: ["user", session.user.id],
-    queryFn: async () => {
-      const response = await fetch(`/api/users/${session.user.id}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch readings");
-      }
-
-      return response.json();
-    },
-  });
-
-  const { mutate, isPending: updateNoficationIsPending } = useMutation({
-    mutationFn: async (newValue: boolean) => {
-      const response = await fetch("/api/notifications", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          alertNotification: newValue,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update notification preference");
-      }
-
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user", session.user.id] });
-    },
-  });
-
-  function handleToggleNotifications() {
-    const currentValue = userData?.data?.alertNotification || false;
-    mutate(!currentValue);
-  }
-
+export default function EvacuationPlanPage() {
   return (
     <div className="grid gap-3">
-      {session.user.role === "user" ? (
-        <div className="flex flex-row items-center justify-between gap-2">
-          <div className="text-foreground/90 space-y-0.5">
-            <div className="text-base font-medium">
-              Earthquake Alert Notifications
-            </div>
-            <div className="text-sm">
-              Receive email alerts when an earthquake activity is detected.
-            </div>
-          </div>
-          <div>
-            <AlertDialog>
-              <AlertDialogTrigger
-                asChild
-                disabled={userDataIsLoading || updateNoficationIsPending}
-                aria-disabled={userDataIsLoading || updateNoficationIsPending}
-              >
-                <div className="cursor-pointer">
-                  <Switch
-                    checked={userData ? userData.data.alertNotification : false}
-                    onCheckedChange={() => {}}
-                    className="cursor-pointer"
-                    disabled={userDataIsLoading || updateNoficationIsPending}
-                    aria-disabled={
-                      userDataIsLoading || updateNoficationIsPending
-                    }
-                  />
-                </div>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    {userData?.data?.alertNotification
-                      ? "Disable Earthquake Notifications?"
-                      : "Enable Earthquake Notifications?"}
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    {userData?.data?.alertNotification
-                      ? "You will no longer receive email alerts when earthquake activity is detected."
-                      : "You will receive email alerts when earthquake activity is detected."}
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => {
-                      handleToggleNotifications();
-                    }}
-                  >
-                    Continue
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        </div>
-      ) : null}
       <div className="flex flex-wrap items-center justify-between gap-2"></div>
       <Card className="w-full">
         <CardHeader className="mx-4.5 flex items-stretch space-y-0 border-b p-0">
