@@ -15,5 +15,5 @@ export default async function Page() {
 
   if (!session) return redirect("/signin");
 
-  return <EvacuationPlanPage session={session} />;
+  return <EvacuationPlanPage />;
 }
