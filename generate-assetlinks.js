@@ -46,4 +46,3 @@ fs.writeFileSync(
   path.join(dir, "assetlinks.json"),
   JSON.stringify(assetlinks, null, 2),
 );
-console.log("assetlinks.json generated successfully");
