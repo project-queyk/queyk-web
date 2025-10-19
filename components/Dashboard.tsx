@@ -485,7 +485,6 @@ export default function Dashboard({ session }: { session: Session }) {
                       >
                         <LineChart
                           data={chartData.slice(-7).map((item) => {
-                            // Count readings above threshold for each day
                             const isSignificant = item.siMaximum > 1.0;
                             return {
                               ...item,
@@ -570,7 +569,6 @@ export default function Dashboard({ session }: { session: Session }) {
                       >
                         <LineChart
                           data={chartData.slice(-7).map((item) => {
-                            // Mark the peak activity point
                             return {
                               ...item,
                               activityTime: item.siAverage,
