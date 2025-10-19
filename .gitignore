@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# sensitive files
+public/.well-known/assetlinks.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
