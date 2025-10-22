@@ -2,9 +2,9 @@
 
 import { Session } from "next-auth";
 import { DateRange } from "react-day-picker";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState, useEffect } from "react";
-import { FileChartColumnIncreasing, Info } from "lucide-react";
+import { FileChartColumnIncreasing, Info, Power } from "lucide-react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
 import { ReadingData } from "@/lib/types/readings";
@@ -38,6 +38,14 @@ export default function Dashboard({ session }: { session: Session }) {
     from: new Date(),
     to: new Date(),
   });
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
 
   const { data: readingsData, isLoading: readingsDataIsLoading } = useQuery({
     queryKey: ["readings", date],
@@ -78,6 +86,21 @@ export default function Dashboard({ session }: { session: Session }) {
         return response.json();
       },
     });
+
+  const { mutate: resetIoT, isPending: resetIoTIsPending } = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/iot/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to reboot IoT device");
+      }
+
+      return response.json();
+    },
+  });
 
   const readings = useMemo(() => {
     return (readingsData?.data as ReadingData[]) || [];
@@ -873,29 +896,45 @@ export default function Dashboard({ session }: { session: Session }) {
             </CardHeader>
           </Card>
           {session.user.role === "admin" ? (
-            <Card className="w-full">
-              <CardHeader className="flex flex-col space-y-0 p-0 sm:flex-row">
-                <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
-                  <CardTitle>Battery Level</CardTitle>
-                  <CardDescription>
-                    {readingsDataIsLoading ? (
-                      <div className="animate-pulse">
-                        <div className="h-8 w-16 rounded bg-gray-300"></div>
-                      </div>
-                    ) : (
-                      <span
-                        className={`text-2xl font-semibold ${batteryLevel ? getBatteryColor(batteryLevel) : "text-primary"}`}
-                      >
-                        {batteryLevel ? `${batteryLevel}%` : "--"}
-                      </span>
-                    )}
-                  </CardDescription>
-                  <p className="text-muted-foreground mt-1 text-xs">
-                    Current IoT sensor battery level
-                  </p>
-                </div>
-              </CardHeader>
-            </Card>
+            <div className="relative">
+              <Card className="w-full">
+                <CardHeader className="flex flex-col space-y-0 p-0 sm:flex-row">
+                  <div className="flex flex-col justify-center gap-1 px-6 py-2 sm:py-3">
+                    <CardTitle>Battery Level</CardTitle>
+                    <CardDescription>
+                      {readingsDataIsLoading ? (
+                        <div className="animate-pulse">
+                          <div className="h-8 w-16 rounded bg-gray-300"></div>
+                        </div>
+                      ) : (
+                        <span
+                          className={`text-2xl font-semibold ${batteryLevel ? getBatteryColor(batteryLevel) : "text-primary"}`}
+                        >
+                          {batteryLevel ? `${batteryLevel}%` : "--"}
+                        </span>
+                      )}
+                    </CardDescription>
+                    <p className="text-muted-foreground mt-1 text-xs">
+                      Current IoT sensor battery level
+                    </p>
+                  </div>
+                </CardHeader>
+              </Card>
+              <Button
+                variant="secondary"
+                className="absolute top-6 right-6 flex-shrink-0 cursor-pointer"
+                disabled={resetIoTIsPending || cooldown > 0}
+                onClick={() => {
+                  resetIoT();
+                  setCooldown(30);
+                }}
+              >
+                <Power />
+                <p>
+                  {cooldown > 0 ? `Reboot IoT (${cooldown}s)` : "Reboot IoT"}
+                </p>
+              </Button>
+            </div>
           ) : null}
         </div>
         <Card className="w-full md:hidden">
