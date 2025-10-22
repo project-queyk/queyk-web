@@ -930,9 +930,7 @@ export default function Dashboard({ session }: { session: Session }) {
                 }}
               >
                 <Power />
-                <p>
-                  {cooldown > 0 ? `Reboot IoT (${cooldown}s)` : "Reboot IoT"}
-                </p>
+                <p>Reboot IoT</p>
               </Button>
             </div>
           ) : null}
