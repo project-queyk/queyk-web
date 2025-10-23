@@ -14,7 +14,7 @@ export async function POST() {
     }
 
     const response = await fetch(
-      `${process.env.BACKEND_URL}/v1/api/iot/reset`,
+      `${process.env.BACKEND_URL}/v1/api/iot/device/reset`,
       {
         method: "POST",
         headers: {
