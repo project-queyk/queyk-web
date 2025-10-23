@@ -7,6 +7,8 @@ declare module "next-auth" {
       role: "user" | "admin";
       alertNotification: boolean;
       oauthId: string;
+      smsNotification: boolean;
+      phoneNumber: string;
     } & DefaultSession["user"];
   }
 
@@ -33,6 +35,8 @@ export type UserData = {
   createdAt: Date;
   role: "user" | "admin";
   oauthId: string;
+  smsNotification: boolean;
+  phoneNumber: string;
 };
 
 export type BackendUserResponse = {

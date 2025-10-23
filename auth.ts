@@ -52,6 +52,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             role: userData.role,
             alertNotification: userData.alertNotification,
             oauthId: userData.oauthId,
+            smsNotification: userData.smsNotification,
+            phoneNumber: userData.phoneNumber,
           },
         };
       }
