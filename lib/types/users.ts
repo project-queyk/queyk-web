@@ -5,6 +5,8 @@ export interface User {
   profileImage: string;
   alertNotification: boolean;
   pushNotification: boolean;
+  smsNotification: boolean;
+  phoneNumber: string;
   expoPushToken: string | null;
   role: "user" | "admin";
   oauthId: string;
