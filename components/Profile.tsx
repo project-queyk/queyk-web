@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState } from "react";
 import Image from "next/image";
 import { Session } from "next-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -15,11 +16,25 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 export default function Profile({ session }: { session: Session }) {
   const queryClient = useQueryClient();
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const { data: userData, isLoading: userDataIsLoading } = useQuery({
     queryKey: ["user", session.user.id],
@@ -33,7 +48,10 @@ export default function Profile({ session }: { session: Session }) {
     },
   });
 
-  const { mutate, isPending: updateNoficationIsPending } = useMutation({
+  const {
+    mutate: updateEmailNotification,
+    isPending: updateEmailNotificationIsPending,
+  } = useMutation({
     mutationFn: async (newValue: boolean) => {
       const response = await fetch("/api/notifications", {
         method: "PATCH",
@@ -144,14 +162,86 @@ export default function Profile({ session }: { session: Session }) {
     },
   });
 
-  function handleToggleNotifications() {
+  const {
+    mutate: updateSMSNotification,
+    isPending: updateSMSNotificationIsPending,
+  } = useMutation({
+    mutationFn: async (newValue: boolean) => {
+      const response = await fetch("/api/sms-notification", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          smsNotification: newValue,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update notification preference");
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user", session.user.id] });
+    },
+  });
+
+  const { mutate: updatePhoneNumber, isPending: updatePhoneNumberIsPending } =
+    useMutation({
+      mutationFn: async (newValue: string) => {
+        const response = await fetch("/api/phone-number", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            phoneNumber: newValue,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to update user's phone number");
+        }
+
+        return response.json();
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["user", session.user.id] });
+      },
+    });
+
+  function handleToggleEmailNotifications() {
     const currentValue = userData?.data?.alertNotification || false;
-    mutate(!currentValue);
+    updateEmailNotification(!currentValue);
+  }
+
+  function handleToggleSMSNotifications() {
+    const currentValue = userData?.data?.smsNotification || false;
+    updateSMSNotification(!currentValue);
   }
 
   function handleTogglePushNotifications() {
     const currentValue = userData?.data?.webPushSubscription ? true : false;
     togglePushNotifications(!currentValue);
+  }
+
+  async function handleUpdateUserPhoneNumber(
+    event: React.FormEvent<HTMLFormElement>,
+  ) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target as HTMLFormElement);
+    const phoneNumber = formData.get("phone-number") as string;
+
+    setPhoneNumber("");
+    updatePhoneNumber(phoneNumber);
+
+    const dialog = document.activeElement?.closest('[role="dialog"]');
+    if (dialog) {
+      (dialog.querySelector("[data-dialog-close]") as HTMLElement)?.click();
+    }
   }
 
   return (
@@ -177,6 +267,83 @@ export default function Profile({ session }: { session: Session }) {
       </Card>
       <Card>
         <CardHeader className="mx-6 flex flex-col items-stretch space-y-0 p-0">
+          <CardTitle>Personal Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-4 flex flex-row items-center justify-between gap-2">
+            <div className="grid items-center gap-1">
+              <p className="text-foreground/80 text-sm">Phone Number:</p>
+              <p className="text-foreground/90 font-medium">
+                {userData?.data?.phoneNumber
+                  ? `0${userData.data.phoneNumber.slice(3)}`
+                  : "Not set"}
+              </p>
+            </div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="secondary">
+                  {userData?.data?.phoneNumber ? "Update" : "Set now"}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Update phone number</DialogTitle>
+                  <DialogDescription>
+                    Enter your new phone number below and click save to update
+                    your profile.
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleUpdateUserPhoneNumber}>
+                  <div className="grid gap-4">
+                    <div className="grid gap-3">
+                      <Label htmlFor="phone-number">Phone number</Label>
+                      <Input
+                        id="phone-number"
+                        name="phone-number"
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={10}
+                        minLength={10}
+                        pattern="9[0-9]{9}"
+                        onChange={(e) => {
+                          let value = e.target.value.replace(/\D/g, "");
+                          if (value.length === 0) {
+                            setPhoneNumber("");
+                          } else {
+                            if (value[0] !== "9") {
+                              value = "9" + value.replace(/^9*/, "");
+                            }
+                            setPhoneNumber(value.slice(0, 10));
+                          }
+                        }}
+                        value={phoneNumber}
+                        placeholder="9XXXXXXXXX"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter className="mt-4">
+                    <DialogClose asChild>
+                      <Button variant="outline" data-dialog-close>
+                        Cancel
+                      </Button>
+                    </DialogClose>
+                    <Button
+                      type="submit"
+                      disabled={
+                        phoneNumber?.length !== 10 || updatePhoneNumberIsPending
+                      }
+                    >
+                      Save changes
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="mx-6 flex flex-col items-stretch space-y-0 p-0">
           <CardTitle>Settings</CardTitle>
         </CardHeader>
         <CardContent>
@@ -188,8 +355,12 @@ export default function Profile({ session }: { session: Session }) {
               <AlertDialog>
                 <AlertDialogTrigger
                   asChild
-                  disabled={userDataIsLoading || updateNoficationIsPending}
-                  aria-disabled={userDataIsLoading || updateNoficationIsPending}
+                  disabled={
+                    userDataIsLoading || updateEmailNotificationIsPending
+                  }
+                  aria-disabled={
+                    userDataIsLoading || updateEmailNotificationIsPending
+                  }
                 >
                   <div className="cursor-pointer">
                     <Switch
@@ -198,9 +369,11 @@ export default function Profile({ session }: { session: Session }) {
                       }
                       onCheckedChange={() => {}}
                       className="cursor-pointer"
-                      disabled={userDataIsLoading || updateNoficationIsPending}
+                      disabled={
+                        userDataIsLoading || updateEmailNotificationIsPending
+                      }
                       aria-disabled={
-                        userDataIsLoading || updateNoficationIsPending
+                        userDataIsLoading || updateEmailNotificationIsPending
                       }
                     />
                   </div>
@@ -222,7 +395,65 @@ export default function Profile({ session }: { session: Session }) {
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => {
-                        handleToggleNotifications();
+                        handleToggleEmailNotifications();
+                      }}
+                    >
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </div>
+          <div className="mb-4 flex flex-row items-center justify-between gap-2">
+            <div className="text-foreground/80 text-sm">
+              Receive SMS notifications when an earthquake activity is detected.
+            </div>
+            <div>
+              <AlertDialog>
+                <AlertDialogTrigger
+                  asChild
+                  disabled={userDataIsLoading || updateSMSNotificationIsPending}
+                  aria-disabled={
+                    userDataIsLoading || updateSMSNotificationIsPending
+                  }
+                >
+                  <div className="cursor-pointer">
+                    <Switch
+                      checked={userData?.data?.smsNotification ? true : false}
+                      onCheckedChange={() => {}}
+                      className="cursor-pointer"
+                      disabled={
+                        userDataIsLoading ||
+                        updateSMSNotificationIsPending ||
+                        !userData?.data?.phoneNumber
+                      }
+                      aria-disabled={
+                        userDataIsLoading ||
+                        updateSMSNotificationIsPending ||
+                        !userData?.data?.phoneNumber
+                      }
+                    />
+                  </div>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {userData?.data?.smsNotification
+                        ? "Disable SMS Notifications?"
+                        : "Enable SMS Notifications?"}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {userData?.data?.smsNotification
+                        ? "You will no longer receive SMS notifications when earthquake activity is detected."
+                        : "You will receive SMS notifications when earthquake activity is detected. Your browser will request permission to send notifications."}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        handleToggleSMSNotifications();
                       }}
                     >
                       Continue
