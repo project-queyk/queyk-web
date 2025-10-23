@@ -930,7 +930,7 @@ export default function Dashboard({ session }: { session: Session }) {
                 }}
               >
                 <Power />
-                <p>Reboot IoT</p>
+                <p>Reboot device</p>
               </Button>
             </div>
           ) : null}
