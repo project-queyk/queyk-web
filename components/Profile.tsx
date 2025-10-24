@@ -277,9 +277,9 @@ export default function Profile({ session }: { session: Session }) {
               alt={`${session.user.name ?? ""}name`}
               className="rounded-full"
             />
-            <div>
-              <p className="font-semibold">{session.user.name}</p>
-              <p className="text-muted-foreground text-sm font-medium">
+            <div className="min-w-0">
+              <p className="truncate font-semibold">{session.user.name}</p>
+              <p className="text-muted-foreground truncate text-sm font-medium">
                 {session.user.email}
               </p>
             </div>
