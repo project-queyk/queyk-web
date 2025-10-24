@@ -212,6 +212,27 @@ export default function Profile({ session }: { session: Session }) {
       },
     });
 
+  const { mutate: deletePhoneNumber, isPending: deletePhoneNumberIsPending } =
+    useMutation({
+      mutationFn: async () => {
+        const response = await fetch("/api/phone-number", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete user's phone number");
+        }
+
+        return response.json();
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["user", session.user.id] });
+      },
+    });
+
   function handleToggleEmailNotifications() {
     const currentValue = userData?.data?.alertNotification || false;
     updateEmailNotification(!currentValue);
@@ -281,16 +302,18 @@ export default function Profile({ session }: { session: Session }) {
             </div>
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="secondary">
-                  {userData?.data?.phoneNumber ? "Update" : "Set now"}
-                </Button>
+                {!userData?.data?.phoneNumber && (
+                  <Button variant="secondary" className="cursor-pointer">
+                    Set now
+                  </Button>
+                )}
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>Update phone number</DialogTitle>
+                  <DialogTitle>Set new phone number</DialogTitle>
                   <DialogDescription>
-                    Enter your new phone number below and click save to update
-                    your profile.
+                    Enter your phone number below and click save to update your
+                    profile.
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleUpdateUserPhoneNumber}>
@@ -339,6 +362,48 @@ export default function Profile({ session }: { session: Session }) {
                 </form>
               </DialogContent>
             </Dialog>
+            <AlertDialog>
+              <AlertDialogTrigger
+                asChild
+                disabled={userDataIsLoading || deletePhoneNumberIsPending}
+                aria-disabled={userDataIsLoading || deletePhoneNumberIsPending}
+              >
+                {userData?.data?.phoneNumber && (
+                  <Button
+                    variant="secondary"
+                    className="cursor-pointer"
+                    disabled={userDataIsLoading || deletePhoneNumberIsPending}
+                    aria-disabled={
+                      userDataIsLoading || deletePhoneNumberIsPending
+                    }
+                  >
+                    Remove
+                  </Button>
+                )}
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Remove Phone Number?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to remove your phone number? You will
+                    no longer receive SMS notifications.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction asChild>
+                    <Button
+                      variant="destructive"
+                      onClick={() => {
+                        deletePhoneNumber();
+                      }}
+                    >
+                      Confirm
+                    </Button>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </CardContent>
       </Card>
