@@ -312,7 +312,9 @@ export default function Dashboard({ session }: { session: Session }) {
             <Button
               className="flex gap-2"
               disabled={
-                !formatSeismicMonitorDate(date) || readingsDataIsLoading
+                !formatSeismicMonitorDate(date) ||
+                readingsDataIsLoading ||
+                !!!readingsData.data.length
               }
               onClick={() =>
                 downloadReport(
