@@ -294,11 +294,15 @@ export default function Profile({ session }: { session: Session }) {
           <div className="mb-4 flex flex-row items-center justify-between gap-2">
             <div className="grid items-center gap-1">
               <p className="text-foreground/80 text-sm">Phone Number:</p>
-              <p className="text-foreground/90 font-medium">
-                {userData?.data?.phoneNumber
-                  ? `0${userData.data.phoneNumber.slice(3)}`
-                  : "Not set"}
-              </p>
+              {userDataIsLoading ? (
+                <div className="h-6 w-24 animate-pulse rounded-md bg-gray-200"></div>
+              ) : (
+                <p className="text-foreground/90 font-medium">
+                  {userData?.data?.phoneNumber
+                    ? `0${userData.data.phoneNumber.slice(3)}`
+                    : "Not set"}
+                </p>
+              )}
             </div>
             <Dialog>
               <DialogTrigger asChild>
