@@ -517,7 +517,7 @@ export default function Profile({ session }: { session: Session }) {
                     <AlertDialogDescription>
                       {userData?.data?.smsNotification
                         ? "You will no longer receive SMS notifications when earthquake activity is detected."
-                        : "You will receive SMS notifications when earthquake activity is detected. Your browser will request permission to send notifications."}
+                        : "You will receive SMS notifications when earthquake activity is detected."}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
