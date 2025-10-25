@@ -478,9 +478,15 @@ export default function Profile({ session }: { session: Session }) {
               <AlertDialog>
                 <AlertDialogTrigger
                   asChild
-                  disabled={userDataIsLoading || updateSMSNotificationIsPending}
+                  disabled={
+                    userDataIsLoading ||
+                    updateSMSNotificationIsPending ||
+                    !userData?.data?.phoneNumber
+                  }
                   aria-disabled={
-                    userDataIsLoading || updateSMSNotificationIsPending
+                    userDataIsLoading ||
+                    updateSMSNotificationIsPending ||
+                    !userData?.data?.phoneNumber
                   }
                 >
                   <div className="cursor-pointer">
