@@ -1,5 +1,5 @@
 export type ReadingData = {
-  battery: number;
+  battery: number | null;
   createdAt: string;
   id: string;
   siAverage: number;

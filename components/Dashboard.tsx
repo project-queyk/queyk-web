@@ -910,9 +910,9 @@ export default function Dashboard({ session }: { session: Session }) {
                         </div>
                       ) : (
                         <span
-                          className={`text-2xl font-semibold ${batteryLevel ? getBatteryColor(batteryLevel) : "text-primary"}`}
+                          className={`text-2xl font-semibold ${batteryLevel ? getBatteryColor(batteryLevel) : "text-red-500"}`}
                         >
-                          {batteryLevel ? `${batteryLevel}%` : "--"}
+                          {batteryLevel ? `${batteryLevel}%` : "Offline"}
                         </span>
                       )}
                     </CardDescription>
@@ -925,7 +925,7 @@ export default function Dashboard({ session }: { session: Session }) {
               <Button
                 variant="secondary"
                 className="absolute top-6 right-6 flex-shrink-0 cursor-pointer"
-                disabled={resetIoTIsPending || cooldown > 0}
+                disabled={resetIoTIsPending || cooldown > 0 || !batteryLevel}
                 onClick={() => {
                   resetIoT();
                   setCooldown(30);
