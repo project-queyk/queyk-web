@@ -243,7 +243,8 @@ export default function LandingPage({ session }: { session: Session | null }) {
               asChild
             >
               <a
-                href="https://play.google.com/store/apps/details?id=com.luiscabantac.Queyk"
+                // href="https://play.google.com/store/apps/details?id=com.luiscabantac.Queyk"
+                href="https://github.com/project-queyk/queyk-mobile/releases"
                 target="_blank"
               >
                 <FaGooglePlay className="size-4" />
