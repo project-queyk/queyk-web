@@ -129,7 +129,7 @@ function ErrorContent() {
                 </div>
                 <form action={signInAction}>
                   <Button
-                    type="button"
+                    type="submit"
                     variant="default"
                     className="w-full font-semibold"
                     disabled={!isVerified}
