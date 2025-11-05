@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Suspense } from "react";
 import { FaGoogle } from "react-icons/fa";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { signInAction } from "@/lib/auth-actions";
 
 import { Button } from "@/components/ui/button";
+import { RecaptchaWrapper } from "@/components/RecaptchaWrapper";
 
 export default function AuthErrorPage() {
   return (
@@ -52,8 +53,9 @@ export default function AuthErrorPage() {
 function ErrorContent() {
   const search = useSearchParams();
   const error = search.get("error");
+  const [isVerified, setIsVerified] = useState(false);
 
-  const getErrorContent = () => {
+  function getErrorContent() {
     switch (error) {
       case "AccessDenied":
         return {
@@ -88,7 +90,7 @@ function ErrorContent() {
           showHomeButton: true,
         };
     }
-  };
+  }
 
   const errorContent = getErrorContent();
 
@@ -119,17 +121,24 @@ function ErrorContent() {
             </p>
           </div>
 
-          <div className="mt-6 space-y-3">
+          <div className="mt-3 space-y-3">
             {errorContent.showGoogleButton && (
-              <Button
-                type="button"
-                variant="default"
-                className="w-full font-semibold"
-                onClick={signInAction}
-              >
-                <FaGoogle className="size-4" />
-                <span>Sign in with Google</span>
-              </Button>
+              <>
+                <div className="flex items-center justify-center">
+                  <RecaptchaWrapper onVerified={() => setIsVerified(true)} />
+                </div>
+                <form action={signInAction}>
+                  <Button
+                    type="button"
+                    variant="default"
+                    className="w-full font-semibold"
+                    disabled={!isVerified}
+                  >
+                    <FaGoogle className="size-4" />
+                    <span>Sign in with Google</span>
+                  </Button>
+                </form>
+              </>
             )}
 
             {errorContent.showHomeButton && (
