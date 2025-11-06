@@ -13,7 +13,7 @@ import {
   MapPin,
   Shield,
 } from "lucide-react";
-import { FaGooglePlay } from "react-icons/fa";
+import { FaGithub } from "react-icons/fa";
 
 import { members } from "@/lib/members";
 import { signOutRootAction } from "@/lib/auth-actions";
@@ -243,14 +243,14 @@ export default function LandingPage({ session }: { session: Session | null }) {
               asChild
             >
               <a
-                href="https://play.google.com/store/apps/details?id=com.luiscabantac.Queyk"
-                // href="https://github.com/project-queyk/queyk-mobile/releases"
+                // href="https://play.google.com/store/apps/details?id=com.luiscabantac.Queyk"
+                href="https://github.com/project-queyk/queyk-mobile/releases"
                 target="_blank"
               >
-                <FaGooglePlay className="size-4" />
+                <FaGithub className="size-4" />
                 <div className="grid">
                   <span className="text-[9px]">Get it on</span>
-                  <p>Google Play</p>
+                  <p>GitHub</p>
                 </div>
               </a>
             </Button>
