@@ -6,7 +6,7 @@ An earthquake monitoring and emergency response system designed for educational 
 
 ## Features
 
-- 📊 **Earthquake Monitoring Dashboard** - Dashboard showing seismic activity data with hourly magnitude and frequency readings
+- 📊 **Earthquake Monitoring Dashboard** - Dashboard showing seismic activity data with hourly intensity and frequency readings
 - 🚨 **Emergency Response Protocols** - Comprehensive safety guidelines based on NDRRMC and PHIVOLCS standards
 - 🗺️ **Evacuation Planning** - Interactive floor plans with marked emergency exits and assembly points
 - 🔐 **Secure Authentication** - School email-based login system
@@ -28,10 +28,10 @@ An earthquake monitoring and emergency response system designed for educational 
 
 ### Seismic Activity Monitoring
 
-- **Activity Chart:** Hourly magnitude and frequency readings
-- **Peak Magnitude:** Highest seismic reading of the day
-- **Average Magnitude:** Daily average seismic activity level
-- **Significant Hours:** Hours with notable activity (>1.0 magnitude)
+- **Activity Chart:** Hourly intensity and frequency readings
+- **Peak Intensity:** Highest seismic reading of the day
+- **Average Intensity:** Daily average seismic activity level
+- **Significant Hours:** Hours with notable activity (>1.0 intensity)
 - **Peak Activity:** Hour with most frequent seismic events
 
 ### Safety Information

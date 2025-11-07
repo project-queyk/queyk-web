@@ -1,6 +1,6 @@
 export type EarthquakeData = {
   id: string;
-  magnitude: number;
+  intensity: number;
   duration: number;
   createdAt: Date;
 };

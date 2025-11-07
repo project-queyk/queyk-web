@@ -176,7 +176,7 @@ export default function Dashboard({ session }: { session: Session }) {
         return {
           id: `skeleton-${i}`,
           createdAt: date.toISOString(),
-          magnitude: 3.0 + Math.random() * 4.0,
+          intensity: 3.0 + Math.random() * 4.0,
           duration: 10 + Math.random() * 50,
           time: date.toLocaleDateString("en-US", {
             month: "short",
@@ -196,7 +196,7 @@ export default function Dashboard({ session }: { session: Session }) {
     }));
   }, [earthquakeDataIsLoading, earthquakesData]);
 
-  const peakMagnitude = useMemo(() => {
+  const peakIntensity = useMemo(() => {
     if (!readings.length) return { value: 0, time: "--", fullDateTime: null };
     const peak = readings.reduce(
       (max, reading) => (reading.siMaximum > max.siMaximum ? reading : max),
@@ -212,7 +212,7 @@ export default function Dashboard({ session }: { session: Session }) {
     };
   }, [readings]);
 
-  const avgMagnitude = useMemo(() => {
+  const avgIntensity = useMemo(() => {
     if (!readings.length) return "0.00";
     const sum = readings.reduce((acc, reading) => acc + reading.siAverage, 0);
     return (sum / readings.length).toFixed(2);
@@ -355,12 +355,12 @@ export default function Dashboard({ session }: { session: Session }) {
                       <div className="flex flex-col">
                         <span className="text-primary text-2xl font-semibold">
                           {formatSeismicMonitorDate(date) && readings.length
-                            ? peakMagnitude.value.toFixed(3)
+                            ? peakIntensity.value.toFixed(3)
                             : "--"}
                         </span>
                         <span className="text-muted-foreground block">
                           {formatSeismicMonitorDate(date) && readings.length
-                            ? `at ${peakMagnitude.time}`
+                            ? `at ${peakIntensity.time}`
                             : "No data"}
                         </span>
                       </div>
@@ -422,7 +422,7 @@ export default function Dashboard({ session }: { session: Session }) {
                       <div className="flex flex-col">
                         <span className="text-primary text-2xl font-semibold">
                           {formatSeismicMonitorDate(date) && readings.length
-                            ? avgMagnitude
+                            ? avgIntensity
                             : "--"}
                         </span>
                         <span className="text-muted-foreground block">
@@ -809,9 +809,9 @@ export default function Dashboard({ session }: { session: Session }) {
                                   }}
                                 />
                                 <span className="text-sm">
-                                  Magnitude:{" "}
-                                  {typeof data.magnitude === "number"
-                                    ? data.magnitude.toFixed(1)
+                                  Intensity:{" "}
+                                  {typeof data.intensity === "number"
+                                    ? data.intensity.toFixed(1)
                                     : "--"}
                                 </span>
                               </div>
@@ -851,7 +851,7 @@ export default function Dashboard({ session }: { session: Session }) {
                   />
                 )}
                 <Line
-                  dataKey="magnitude"
+                  dataKey="intensity"
                   type="monotone"
                   stroke={
                     earthquakeDataIsLoading ? "#e5e7eb" : "hsl(var(--chart-1))"
@@ -1006,9 +1006,9 @@ export default function Dashboard({ session }: { session: Session }) {
                                   }}
                                 />
                                 <span className="text-sm">
-                                  Magnitude:{" "}
-                                  {typeof data.magnitude === "number"
-                                    ? data.magnitude.toFixed(1)
+                                  Intensity:{" "}
+                                  {typeof data.intensity === "number"
+                                    ? data.intensity.toFixed(1)
                                     : "--"}
                                 </span>
                               </div>
@@ -1048,7 +1048,7 @@ export default function Dashboard({ session }: { session: Session }) {
                   />
                 )}
                 <Line
-                  dataKey="magnitude"
+                  dataKey="intensity"
                   type="monotone"
                   stroke={
                     earthquakeDataIsLoading ? "#e5e7eb" : "hsl(var(--chart-1))"
