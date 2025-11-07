@@ -74,93 +74,93 @@ export default function Profile({ session }: { session: Session }) {
     },
   });
 
-  const {
-    mutate: togglePushNotifications,
-    isPending: pushNotificationPending,
-  } = useMutation({
-    mutationFn: async (enable: boolean) => {
-      if (enable) {
-        if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-          throw new Error("Push notifications not supported");
-        }
+  // const {
+  //   mutate: togglePushNotifications,
+  //   isPending: pushNotificationPending,
+  // } = useMutation({
+  //   mutationFn: async (enable: boolean) => {
+  //     if (enable) {
+  //       if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+  //         throw new Error("Push notifications not supported");
+  //       }
 
-        if (Notification.permission === "denied") {
-          throw new Error("Push notifications denied");
-        }
+  //       if (Notification.permission === "denied") {
+  //         throw new Error("Push notifications denied");
+  //       }
 
-        if (Notification.permission === "default") {
-          const permission = await Notification.requestPermission();
-          if (permission !== "granted") {
-            throw new Error("Push notification permission denied");
-          }
-        }
+  //       if (Notification.permission === "default") {
+  //         const permission = await Notification.requestPermission();
+  //         if (permission !== "granted") {
+  //           throw new Error("Push notification permission denied");
+  //         }
+  //       }
 
-        const registration = await navigator.serviceWorker.register("/sw.js", {
-          scope: "/",
-          updateViaCache: "none",
-        });
-        await navigator.serviceWorker.ready;
+  //       const registration = await navigator.serviceWorker.register("/sw.js", {
+  //         scope: "/",
+  //         updateViaCache: "none",
+  //       });
+  //       await navigator.serviceWorker.ready;
 
-        const existingSub = await registration.pushManager.getSubscription();
-        let subscription;
+  //       const existingSub = await registration.pushManager.getSubscription();
+  //       let subscription;
 
-        if (existingSub) {
-          subscription = existingSub;
-        } else {
-          if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
-            throw new Error("VAPID key not configured");
-          }
+  //       if (existingSub) {
+  //         subscription = existingSub;
+  //       } else {
+  //         if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
+  //           throw new Error("VAPID key not configured");
+  //         }
 
-          const urlBase64ToUint8Array = (base64String: string) => {
-            const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-            const base64 = (base64String + padding)
-              .replace(/-/g, "+")
-              .replace(/_/g, "/");
-            const rawData = window.atob(base64);
-            const outputArray = new Uint8Array(rawData.length);
-            for (let i = 0; i < rawData.length; ++i) {
-              outputArray[i] = rawData.charCodeAt(i);
-            }
-            return outputArray;
-          };
+  //         const urlBase64ToUint8Array = (base64String: string) => {
+  //           const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  //           const base64 = (base64String + padding)
+  //             .replace(/-/g, "+")
+  //             .replace(/_/g, "/");
+  //           const rawData = window.atob(base64);
+  //           const outputArray = new Uint8Array(rawData.length);
+  //           for (let i = 0; i < rawData.length; ++i) {
+  //             outputArray[i] = rawData.charCodeAt(i);
+  //           }
+  //           return outputArray;
+  //         };
 
-          subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(
-              process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-            ),
-          });
-        }
+  //         subscription = await registration.pushManager.subscribe({
+  //           userVisibleOnly: true,
+  //           applicationServerKey: urlBase64ToUint8Array(
+  //             process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+  //           ),
+  //         });
+  //       }
 
-        const serializedSub = JSON.parse(JSON.stringify(subscription));
-        const response = await fetch("/api/push-subscribe", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ subscription: serializedSub }),
-        });
+  //       const serializedSub = JSON.parse(JSON.stringify(subscription));
+  //       const response = await fetch("/api/push-subscribe", {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ subscription: serializedSub }),
+  //       });
 
-        if (!response.ok) {
-          throw new Error("Failed to subscribe to push notifications");
-        }
+  //       if (!response.ok) {
+  //         throw new Error("Failed to subscribe to push notifications");
+  //       }
 
-        return response.json();
-      } else {
-        const response = await fetch("/api/push-unsubscribe", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        });
+  //       return response.json();
+  //     } else {
+  //       const response = await fetch("/api/push-unsubscribe", {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //       });
 
-        if (!response.ok) {
-          throw new Error("Failed to unsubscribe from push notifications");
-        }
+  //       if (!response.ok) {
+  //         throw new Error("Failed to unsubscribe from push notifications");
+  //       }
 
-        return response.json();
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user", session.user.id] });
-    },
-  });
+  //       return response.json();
+  //     }
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ["user", session.user.id] });
+  //   },
+  // });
 
   const {
     mutate: updateSMSNotification,
@@ -243,10 +243,10 @@ export default function Profile({ session }: { session: Session }) {
     updateSMSNotification(!currentValue);
   }
 
-  function handleTogglePushNotifications() {
-    const currentValue = userData?.data?.webPushSubscription ? true : false;
-    togglePushNotifications(!currentValue);
-  }
+  // function handleTogglePushNotifications() {
+  //   const currentValue = userData?.data?.webPushSubscription ? true : false;
+  //   togglePushNotifications(!currentValue);
+  // }
 
   async function handleUpdateUserPhoneNumber(
     event: React.FormEvent<HTMLFormElement>,
@@ -538,7 +538,7 @@ export default function Profile({ session }: { session: Session }) {
               </AlertDialog>
             </div>
           </div>
-          <div className="flex flex-row items-center justify-between gap-2">
+          {/* <div className="flex flex-row items-center justify-between gap-2">
             <div className="text-foreground/80 text-sm">
               Receive browser push notifications when an earthquake activity is
               detected.
@@ -590,7 +590,7 @@ export default function Profile({ session }: { session: Session }) {
                 </AlertDialogContent>
               </AlertDialog>
             </div>
-          </div>
+          </div> */}
         </CardContent>
       </Card>
     </div>
