@@ -21,7 +21,7 @@ export default function MobileFloorPlans() {
 
   return (
     <div className="space-y-4">
-      <Select defaultValue="gymnasium" onValueChange={setSelectedFloor}>
+      <Select defaultValue="ground" onValueChange={setSelectedFloor}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Select floor" />
         </SelectTrigger>

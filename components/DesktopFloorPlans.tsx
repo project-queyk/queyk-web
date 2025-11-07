@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function DesktopFloorPlans() {
   return (
-    <Tabs defaultValue="gymnasium" className="w-full">
+    <Tabs defaultValue="ground" className="w-full">
       <TabsList className="flex w-full">
         {floors.map((floor) => (
           <TabsTrigger
