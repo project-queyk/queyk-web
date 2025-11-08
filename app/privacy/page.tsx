@@ -123,6 +123,27 @@ const privacySections = [
     ],
   },
   {
+    header: "Phone Number Collection & SMS Notifications",
+    description: "How we collect and use phone numbers for emergency alerts",
+    bulletItems: [
+      {
+        title: "Voluntary Collection",
+        description:
+          "Phone numbers are collected only when you voluntarily provide them through your profile settings to enable SMS earthquake alerts. This information is completely optional.",
+      },
+      {
+        title: "SMS Alert Purpose",
+        description:
+          "Your phone number is used exclusively to send critical earthquake notifications and emergency safety alerts. We do not use it for marketing or non-emergency communications.",
+      },
+      {
+        title: "Secure Storage & Control",
+        description:
+          "Phone numbers are securely stored with encryption and can be updated or completely removed from your profile at any time through your account settings.",
+      },
+    ],
+  },
+  {
     header: "Third-Party Services",
     description: "External services and data sources",
     bulletItems: [
@@ -192,7 +213,7 @@ export default function Page() {
             </Card>
           ))}
           <div className="text-muted-foreground py-8 text-center text-xs md:text-sm">
-            Last updated: Aug 30, 2025 | © {new Date().getFullYear()} Queyk
+            Last updated: Nov 8, 2025 | © {new Date().getFullYear()} Queyk
             Project - All Rights Reserved
           </div>
         </div>
