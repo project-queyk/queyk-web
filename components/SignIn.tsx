@@ -14,7 +14,7 @@ export default function SignIn() {
   const [isVerified, setIsVerified] = useState(false);
 
   return (
-    <section className="flex min-h-screen px-4 py-16 md:py-32 dark:bg-transparent">
+    <section className="flex min-h-screen flex-col items-center justify-center px-4 py-16 md:py-32 dark:bg-transparent">
       <form
         className="bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5"
         action={signInAction}
@@ -57,6 +57,13 @@ export default function SignIn() {
           </div>
         </div>
       </form>
+      <p className="text-sm">
+        By signing in, you agree to our{" "}
+        <Link href="/privacy" target="_blank" className="underline">
+          Privacy Policy
+        </Link>
+        .
+      </p>
     </section>
   );
 }
