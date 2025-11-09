@@ -3,7 +3,14 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Session } from "next-auth";
-import { Bell, BellOff, MoreHorizontal, UserCheck } from "lucide-react";
+import {
+  Bell,
+  BellOff,
+  MessageCircle,
+  MessageCircleOff,
+  MoreHorizontal,
+  UserCheck,
+} from "lucide-react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   useReactTable,
@@ -78,6 +85,35 @@ export default function UserManagementPage({ session }: { session: Session }) {
         const errorData = await response.json();
         throw new Error(
           errorData.error || "Failed to update notification preference",
+        );
+      }
+
+      return response.json();
+    },
+  });
+
+  const toggleSMSNotification = useMutation({
+    mutationFn: async ({
+      userId,
+      currentValue,
+    }: {
+      userId: string;
+      currentValue: boolean;
+    }) => {
+      const response = await fetch(`/api/users/${userId}/sms-notification`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          smsNotification: !currentValue,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || "Failed to update sms notification preference",
         );
       }
 
@@ -173,9 +209,27 @@ export default function UserManagementPage({ session }: { session: Session }) {
     },
     {
       accessorKey: "alertNotification",
-      header: "Alert Notifications",
+      header: "Email Notifications",
       cell: ({ row }) => {
         const enabled = row.getValue("alertNotification") as boolean;
+        return (
+          <span
+            className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+              enabled
+                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+            }`}
+          >
+            {enabled ? "Enabled" : "Disabled"}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: "smsNotification",
+      header: "SMS Notifications",
+      cell: ({ row }) => {
+        const enabled = row.getValue("smsNotification") as boolean;
         return (
           <span
             className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
@@ -344,6 +398,67 @@ export default function UserManagementPage({ session }: { session: Session }) {
                 )}
                 {user.alertNotification ? "Disable" : "Enable"} Notifications
               </DropdownMenuItem>
+              {user?.phoneNumber?.length ? (
+                <DropdownMenuItem
+                  onClick={async () => {
+                    try {
+                      const newSMSNotificationValue = !user.smsNotification;
+
+                      const queryKey = [
+                        "users",
+                        pagination.pageIndex + 1,
+                        pagination.pageSize,
+                        globalFilter,
+                      ];
+
+                      queryClient.setQueryData(
+                        queryKey,
+                        (oldData: UsersResponse | undefined) => {
+                          if (!oldData) return oldData;
+
+                          return {
+                            ...oldData,
+                            data: oldData.data.map((u) =>
+                              u.id === user.id
+                                ? {
+                                    ...u,
+                                    smsNotification: newSMSNotificationValue,
+                                  }
+                                : u,
+                            ),
+                          };
+                        },
+                      );
+
+                      toggleSMSNotification.mutate(
+                        {
+                          userId: user.id,
+                          currentValue: user.smsNotification,
+                        },
+                        {
+                          onError: () => {
+                            queryClient.invalidateQueries({ queryKey });
+                          },
+                        },
+                      );
+                    } catch (error) {
+                      alert(
+                        error instanceof Error
+                          ? error.message
+                          : "Failed to update sms notification preference",
+                      );
+                    }
+                  }}
+                >
+                  {user.alertNotification ? (
+                    <MessageCircle className="mr-2 h-4 w-4" />
+                  ) : (
+                    <MessageCircleOff className="mr-2 h-4 w-4" />
+                  )}
+                  {user.smsNotification ? "Disable" : "Enable"} SMS
+                  Notifications
+                </DropdownMenuItem>
+              ) : null}
               {/* <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive"
