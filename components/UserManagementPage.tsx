@@ -450,7 +450,7 @@ export default function UserManagementPage({ session }: { session: Session }) {
                     }
                   }}
                 >
-                  {user.alertNotification ? (
+                  {user.smsNotification ? (
                     <MessageCircle className="mr-2 h-4 w-4" />
                   ) : (
                     <MessageCircleOff className="mr-2 h-4 w-4" />
