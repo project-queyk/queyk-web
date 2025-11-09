@@ -392,9 +392,9 @@ export default function UserManagementPage({ session }: { session: Session }) {
                 }}
               >
                 {user.alertNotification ? (
-                  <Bell className="mr-2 h-4 w-4" />
-                ) : (
                   <BellOff className="mr-2 h-4 w-4" />
+                ) : (
+                  <Bell className="mr-2 h-4 w-4" />
                 )}
                 {user.alertNotification ? "Disable" : "Enable"} Notifications
               </DropdownMenuItem>
@@ -451,9 +451,9 @@ export default function UserManagementPage({ session }: { session: Session }) {
                   }}
                 >
                   {user.smsNotification ? (
-                    <MessageCircle className="mr-2 h-4 w-4" />
-                  ) : (
                     <MessageCircleOff className="mr-2 h-4 w-4" />
+                  ) : (
+                    <MessageCircle className="mr-2 h-4 w-4" />
                   )}
                   {user.smsNotification ? "Disable" : "Enable"} SMS
                   Notifications
