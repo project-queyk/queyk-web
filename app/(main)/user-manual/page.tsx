@@ -43,22 +43,22 @@ const userManualSections = [
       {
         title: "Seismic Activity Chart",
         description:
-          "The main chart displays hourly intensity and frequency readings throughout the day. Click on data points for details.",
+          "The main chart displays hourly magnitude and frequency readings throughout the day. Click on data points for details.",
       },
       {
-        title: "Peak Intensity",
+        title: "Peak Magnitude",
         description:
           "Shows the highest seismic reading of the day and when it occurred.",
       },
       {
-        title: "Average Intensity",
+        title: "Average Magnitude",
         description:
           "Displays the average seismic activity level across all hours today.",
       },
       {
         title: "Significant Hours",
         description:
-          "Indicates how many hours experienced notable seismic activity (above 1.0 intensity).",
+          "Indicates how many hours experienced notable seismic activity (above 1.0 magnitude).",
       },
       {
         title: "Peak Activity",

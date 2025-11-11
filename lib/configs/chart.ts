@@ -40,8 +40,8 @@ export const earthquakeChartConfig = {
   activity: {
     label: "Earthquake Activity",
   },
-  intensity: {
-    label: "Intensity",
+  magnitude: {
+    label: "Magnitude",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
@@ -50,8 +50,8 @@ export const skeletonEarthquakeConfig = {
   activity: {
     label: "Earthquake Activity",
   },
-  intensity: {
-    label: "Intensity",
+  magnitude: {
+    label: "Magnitude",
     color: "#e5e7eb",
   },
 } satisfies ChartConfig;

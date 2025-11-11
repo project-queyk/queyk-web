@@ -335,7 +335,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm">
-                    View hourly intensity readings, track peak activity periods,
+                    View hourly magnitude readings, track peak activity periods,
                     and monitor significant seismic events through our
                     informative dashboard.
                   </p>
