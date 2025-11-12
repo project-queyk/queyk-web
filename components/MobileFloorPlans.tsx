@@ -14,10 +14,15 @@ import {
 } from "@/components/ui/select";
 
 export default function MobileFloorPlans() {
+  const [isGif, setIsGif] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState("ground");
 
   const currentFloor =
     floors.find((floor) => floor.id === selectedFloor) || floors[0];
+
+  function handleToggleIsGif() {
+    setIsGif((prev) => !prev);
+  }
 
   return (
     <div className="space-y-4">
@@ -34,15 +39,31 @@ export default function MobileFloorPlans() {
         </SelectContent>
       </Select>
       <div className="animate-in fade-in-50">
-        <div className="relative mx-auto aspect-video w-full overflow-hidden rounded-md">
+        <p className="text-foreground/70 mb-4 text-center text-xs">
+          Tap the image to {isGif ? "hide" : "show"} evacuation arrows
+        </p>
+        <button
+          className="relative mx-auto aspect-video w-full cursor-pointer overflow-hidden rounded-md"
+          onClick={handleToggleIsGif}
+        >
           <Image
-            src={currentFloor.imageSrc}
+            src={isGif ? currentFloor.gifSrc : currentFloor.imageSrc}
             alt={`${currentFloor.title} Earthquake Evacuation Plan`}
             width={1280}
             height={720}
             className="object-contain"
           />
-        </div>
+        </button>
+        {isGif && (
+          <div className="grid gap-2">
+            <p className="text-destructive text-center text-xs font-semibold">
+              Emergency Exit
+            </p>
+            <p className="text-center text-xs font-semibold text-yellow-500">
+              Normal Lane
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

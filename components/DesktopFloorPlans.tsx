@@ -1,10 +1,17 @@
 import Image from "next/image";
+import { useState } from "react";
 
 import { floors } from "@/lib/floors";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function DesktopFloorPlans() {
+  const [isGif, setIsGif] = useState(false);
+
+  function handleToggleIsGif() {
+    setIsGif((prev) => !prev);
+  }
+
   return (
     <Tabs defaultValue="ground" className="w-full">
       <TabsList className="flex w-full">
@@ -20,19 +27,32 @@ export default function DesktopFloorPlans() {
       </TabsList>
       {floors.map((floor) => (
         <TabsContent key={floor.id} value={floor.id} className="mt-4">
-          <div className="relative mx-auto aspect-video w-full max-w-4xl overflow-hidden rounded-md">
+          <p className="text-foreground/70 mb-4 text-center text-xs">
+            Tap the image to {isGif ? "hide" : "show"} evacuation arrows
+          </p>
+          <button
+            className="relative mx-auto flex aspect-video w-full max-w-4xl cursor-pointer items-center overflow-hidden rounded-md"
+            onClick={handleToggleIsGif}
+          >
             <Image
-              src={floor.imageSrc}
+              src={isGif ? floor.gifSrc : floor.imageSrc}
               alt={`${floor.title} Earthquake Evacuation Plan`}
               width={1280}
               height={720}
               className="object-contain"
               priority={floor.id === "ground"}
             />
-          </div>
-          <div className="mt-2 text-center">
-            <h3 className="font-medium">{floor.title}</h3>
-          </div>
+          </button>
+          {isGif && (
+            <div className="mt-2 grid gap-2">
+              <p className="text-destructive text-center text-sm font-semibold">
+                Emergency Exit
+              </p>
+              <p className="text-center text-sm font-semibold text-yellow-500">
+                Normal Lane
+              </p>
+            </div>
+          )}
         </TabsContent>
       ))}
     </Tabs>
