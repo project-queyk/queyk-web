@@ -187,7 +187,7 @@ export default function LandingPage({ session }: { session: Session | null }) {
         )}
       </motion.header>
       <main>
-        <section className="mx-6 mt-20 flex min-h-[75dvh] flex-col items-center justify-center gap-2 md:mx-24 md:mt-6 md:min-h-[110dvh] md:gap-3">
+        <section className="mx-6 mt-14 flex min-h-[75dvh] flex-col items-center justify-center gap-2 md:mx-24 md:mt-6 md:min-h-[110dvh] md:gap-3">
           <motion.h1
             className="flex flex-wrap justify-center gap-x-2 text-2xl font-semibold md:text-5xl"
             variants={container}
