@@ -290,11 +290,10 @@ export default function LandingPage({ session }: { session: Session | null }) {
               </div>
               <div className="mt-4 block md:hidden">
                 <Image
-                  src="/queyk-hero-small.png"
+                  src="/queyk-hero-mobile.png"
                   alt="queyk dashboard hero image"
                   width={1080}
-                  height={1080}
-                  className="rounded-lg shadow-xl"
+                  height={1440}
                 />
               </div>
             </motion.div>
