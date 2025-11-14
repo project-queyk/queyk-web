@@ -314,7 +314,7 @@ export default function Dashboard({ session }: { session: Session }) {
               disabled={
                 !formatSeismicMonitorDate(date) ||
                 readingsDataIsLoading ||
-                !!!readingsData.data.length
+                !!!readingsData?.data?.length
               }
               onClick={() =>
                 downloadReport(
@@ -910,9 +910,13 @@ export default function Dashboard({ session }: { session: Session }) {
                         </div>
                       ) : (
                         <span
-                          className={`text-2xl font-semibold ${batteryLevel ? getBatteryColor(batteryLevel) : "text-red-500"}`}
+                          className={`text-2xl font-semibold ${cooldown ? "text-primary" : batteryLevel ? getBatteryColor(batteryLevel) : "text-red-500"}`}
                         >
-                          {batteryLevel ? `${batteryLevel}%` : "Offline"}
+                          {cooldown
+                            ? "Rebooting..."
+                            : batteryLevel
+                              ? `${batteryLevel}%`
+                              : "Offline"}
                         </span>
                       )}
                     </CardDescription>
