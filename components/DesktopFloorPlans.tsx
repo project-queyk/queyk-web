@@ -41,6 +41,7 @@ export default function DesktopFloorPlans() {
               height={720}
               className="object-contain"
               priority={floor.id === "ground"}
+              unoptimized={isGif ? true : false}
             />
           </button>
           {isGif && (

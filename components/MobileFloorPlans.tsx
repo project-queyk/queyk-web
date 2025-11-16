@@ -52,6 +52,8 @@ export default function MobileFloorPlans() {
             width={1280}
             height={720}
             className="object-contain"
+            priority={currentFloor.id === "ground"}
+            unoptimized={isGif ? true : false}
           />
         </button>
         {isGif && (
