@@ -3,16 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { FaGoogle } from "react-icons/fa";
-import { useState } from "react";
 
 import { signInAction } from "@/lib/auth-actions";
 
 import { Button } from "@/components/ui/button";
-import { RecaptchaWrapper } from "@/components/RecaptchaWrapper";
 
 export default function SignIn() {
-  const [isVerified, setIsVerified] = useState(false);
-
   return (
     <section className="flex min-h-screen flex-col items-center justify-center px-4 py-16 md:py-32 dark:bg-transparent">
       <form
@@ -42,14 +38,10 @@ export default function SignIn() {
           </div>
 
           <div className="mt-3">
-            <div className="flex items-center justify-center">
-              <RecaptchaWrapper onVerified={() => setIsVerified(true)} />
-            </div>
             <Button
               type="submit"
               variant="default"
               className="w-full font-semibold"
-              disabled={!isVerified}
             >
               <FaGoogle className="size-4" />
               <span>Sign in with Google</span>

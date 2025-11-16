@@ -5,25 +5,7 @@ import { signIn, signOut } from "@/auth";
 
 import { BackendUserResponse } from "@/types/auth";
 
-export async function signInAction(formData: FormData) {
-  const rawFormData = Object.fromEntries(formData);
-  const recaptchaResponse = await fetch(
-    "https://www.google.com/recaptcha/api/siteverify",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: `secret=${process.env.RECAPTCHA_SECRET}&response=${rawFormData.recaptchaToken}`,
-    },
-  );
-  const recaptchaData = await recaptchaResponse.json();
-
-  if (!recaptchaData.success || recaptchaData.score < 0.5) {
-    console.log("Recaptcha failed", JSON.stringify(recaptchaData, null, 2));
-    throw new Error("Recaptcha failed");
-  }
-
+export async function signInAction() {
   await signIn("google", { redirectTo: "/dashboard" });
 }
 
