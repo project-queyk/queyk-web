@@ -1,8 +1,11 @@
 import NextAuth from "next-auth";
+import { jwtDecode } from "jwt-decode";
 import Google from "next-auth/providers/google";
+import Credentials from "next-auth/providers/credentials";
 
-import { UserData } from "./types/auth";
-import { signInBackendAction } from "./lib/auth-actions";
+import { UserData } from "@/types/auth";
+import { signInBackendAction } from "@/lib/auth-actions";
+import { GoogleToken, UserWithSub } from "@/lib/types/oauth";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -11,16 +14,63 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
       authorization: {
         params: {
-          prompt: "consent",
+          prompt: "select_account",
           access_type: "offline",
           response_type: "code",
         },
       },
     }),
+    Credentials({
+      name: "Google One Tap",
+      credentials: {
+        credential: { label: "Credential", type: "text" },
+      },
+      async authorize(credentials) {
+        try {
+          if (!credentials?.credential) {
+            return null;
+          }
+
+          const decoded = jwtDecode<GoogleToken>(
+            credentials.credential as string,
+          );
+
+          if (!decoded.email?.endsWith(process.env.AUTH_EMAIL_DOMAIN!)) {
+            return null;
+          }
+
+          return {
+            id: decoded.sub,
+            email: decoded.email,
+            name: decoded.name,
+            image: decoded.picture,
+            sub: decoded.sub,
+          };
+        } catch {
+          return null;
+        }
+      },
+    }),
   ],
   callbacks: {
     async signIn(params) {
-      const { profile } = params;
+      const { profile, user, account } = params;
+
+      if (account?.provider === "credentials") {
+        try {
+          const oauthProfile = {
+            sub: (user as UserWithSub).sub,
+            email: user?.email,
+            name: user?.name,
+            picture: user?.image,
+          };
+          await signInBackendAction(oauthProfile);
+          return true;
+        } catch {
+          return false;
+        }
+      }
+
       try {
         if (
           !profile ||
@@ -34,8 +84,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return false;
       }
     },
-    async jwt({ token, profile }) {
-      if (profile) {
+    async jwt({ token, profile, user, account }) {
+      if (account?.provider === "credentials" && user) {
+        try {
+          const oauthProfile = {
+            sub: (user as UserWithSub).sub,
+            email: user?.email,
+            name: user?.name,
+            picture: user?.image,
+          };
+          const userData = await signInBackendAction(oauthProfile);
+          token.userData = userData.data;
+        } catch {
+          return token;
+        }
+      } else if (profile) {
         const userData = await signInBackendAction(profile);
         token.userData = userData.data;
       }

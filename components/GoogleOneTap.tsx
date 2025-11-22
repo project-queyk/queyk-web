@@ -33,7 +33,7 @@ export default function GoogleOneTap() {
 
   const handleCredentialResponse = useCallback(
     (response: CredentialResponse) => {
-      signIn("google", {
+      signIn("credentials", {
         credential: response.credential,
         redirect: true,
         redirectTo: "/dashboard",

@@ -21,3 +21,14 @@ export interface GoogleNotification {
   isDismissedMoment?: () => boolean;
   getDismissedReason?: () => string;
 }
+
+export interface GoogleToken {
+  sub: string;
+  email: string;
+  name: string;
+  picture: string;
+}
+
+export interface UserWithSub {
+  sub?: string;
+}
