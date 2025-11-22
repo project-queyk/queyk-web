@@ -28,7 +28,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         try {
           if (!credentials?.credential) {
-            return null;
+            throw new Error("AccessDenied");
           }
 
           const decoded = jwtDecode<GoogleToken>(
@@ -36,7 +36,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           );
 
           if (!decoded.email?.endsWith(process.env.AUTH_EMAIL_DOMAIN!)) {
-            return null;
+            throw new Error("AccessDenied");
           }
 
           return {
@@ -46,8 +46,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             image: decoded.picture,
             sub: decoded.sub,
           };
-        } catch {
-          return null;
+        } catch (error) {
+          if (error instanceof Error && error.message === "AccessDenied") {
+            throw new Error("AccessDenied");
+          }
+          throw new Error("Callback");
         }
       },
     }),
@@ -67,21 +70,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           await signInBackendAction(oauthProfile);
           return true;
         } catch {
-          return "/error?error=AccessDenied";
+          return false;
         }
       }
 
       try {
         if (!profile) {
-          return "/error?error=NoProfile";
+          return false;
         }
         if (!profile.email?.endsWith(process.env.AUTH_EMAIL_DOMAIN!)) {
-          return "/error?error=AccessDenied";
+          return false;
         }
         await signInBackendAction(profile);
         return true;
       } catch {
-        return "/error?error=Callback";
+        return false;
       }
     },
     async jwt({ token, profile, user, account }) {
