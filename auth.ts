@@ -67,21 +67,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           await signInBackendAction(oauthProfile);
           return true;
         } catch {
-          return false;
+          throw new Error("AccessDenied");
         }
       }
 
       try {
-        if (
-          !profile ||
-          !profile.email?.endsWith(process.env.AUTH_EMAIL_DOMAIN!)
-        ) {
-          return false;
+        if (!profile) {
+          throw new Error("NoProfile");
+        }
+        if (!profile.email?.endsWith(process.env.AUTH_EMAIL_DOMAIN!)) {
+          throw new Error("AccessDenied");
         }
         await signInBackendAction(profile);
         return true;
-      } catch {
-        return false;
+      } catch (error) {
+        if (error instanceof Error) {
+          throw error;
+        }
+        throw new Error("Callback");
       }
     },
     async jwt({ token, profile, user, account }) {
