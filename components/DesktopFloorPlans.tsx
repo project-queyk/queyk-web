@@ -49,9 +49,6 @@ export default function DesktopFloorPlans() {
               <p className="text-destructive text-center text-sm font-semibold">
                 Emergency Exit
               </p>
-              <p className="text-center text-sm font-semibold text-yellow-500">
-                Normal Lane
-              </p>
             </div>
           )}
         </TabsContent>

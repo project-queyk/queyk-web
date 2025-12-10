@@ -61,9 +61,6 @@ export default function MobileFloorPlans() {
             <p className="text-destructive text-center text-xs font-semibold">
               Emergency Exit
             </p>
-            <p className="text-center text-xs font-semibold text-yellow-500">
-              Normal Lane
-            </p>
           </div>
         )}
       </div>
