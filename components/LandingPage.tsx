@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Session } from "next-auth";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import {
   Activity,
   ChevronRight,
@@ -33,7 +33,7 @@ const textPart1 = "Is your school prepared for an";
 const earthquakeWord = "earthquake?";
 const regularWords = textPart1.split(" ");
 
-const container = {
+const container: Variants = {
   hidden: { opacity: 0 },
   visible: (i = 1) => ({
     opacity: 1,
@@ -41,7 +41,7 @@ const container = {
   }),
 };
 
-const child = {
+const child: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
@@ -54,7 +54,7 @@ const child = {
   },
 };
 
-const earthquakeAnimation = {
+const earthquakeAnimation: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
@@ -68,7 +68,7 @@ const earthquakeAnimation = {
   },
 };
 
-const shakeEffect = {
+const shakeEffect: Variants = {
   initial: { x: 0, y: 0 },
   shake: {
     x: [0, -5, 5, -5, 5, -3, 3, -2, 2, 0],
@@ -82,7 +82,7 @@ const shakeEffect = {
   },
 };
 
-const fadeIn = {
+const fadeIn: Variants = {
   hidden: { opacity: 0, y: 10 },
   visible: {
     opacity: 1,
@@ -95,19 +95,18 @@ const fadeIn = {
   },
 };
 
-const headerAnimation = {
+const headerAnimation: Variants = {
   hidden: { opacity: 0, y: -20 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.5,
-      ease: "easeOut",
     },
   },
 };
 
-const heroImageAnimation = {
+const heroImageAnimation: Variants = {
   hidden: { opacity: 0, y: 40, scale: 0.95 },
   visible: {
     opacity: 1,
