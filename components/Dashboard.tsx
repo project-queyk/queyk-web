@@ -322,8 +322,8 @@ export default function Dashboard({ session }: { session: Session }) {
                 >
                   {process.env.NEXT_PUBLIC_BACKEND_URL?.includes("vercel.app")
                     ? isConnected
-                      ? "Polling Active"
-                      : "Polling Offline"
+                      ? "Auto-Update"
+                      : "Update Offline"
                     : isConnected
                       ? "Live"
                       : "Offline"}
