@@ -42,6 +42,7 @@
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
     "recharts": "^2.15.1",
+    "socket.io-client": "^4.8.1",
     "tailwind-merge": "^3.0.2",
     "tw-animate-css": "^1.2.4",
     "web-push": "^3.6.7"
