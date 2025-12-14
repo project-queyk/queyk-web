@@ -27,6 +27,26 @@ export const useSocket = () => {
     const backendUrl =
       process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
 
+    if (backendUrl.includes("vercel.app")) {
+      const pollReadings = () => {
+        queryClient.invalidateQueries({ queryKey: ["readings"] });
+      };
+
+      const pollEarthquakes = () => {
+        queryClient.invalidateQueries({ queryKey: ["earthquakes"] });
+      };
+
+      const readingsInterval = setInterval(pollReadings, 30000);
+      const earthquakesInterval = setInterval(pollEarthquakes, 30000);
+
+      setIsConnected(true);
+
+      return () => {
+        clearInterval(readingsInterval);
+        clearInterval(earthquakesInterval);
+      };
+    }
+
     socket = io(backendUrl);
 
     socket.on("connect", () => {
