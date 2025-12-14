@@ -320,7 +320,13 @@ export default function Dashboard({ session }: { session: Session }) {
                 <span
                   className={isConnected ? "text-green-600" : "text-red-600"}
                 >
-                  {isConnected ? "Live" : "Offline"}
+                  {process.env.NEXT_PUBLIC_BACKEND_URL?.includes("vercel.app")
+                    ? isConnected
+                      ? "Polling Active"
+                      : "Polling Offline"
+                    : isConnected
+                      ? "Live"
+                      : "Offline"}
                 </span>
               </div>
               <Button
