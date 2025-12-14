@@ -7,7 +7,6 @@ import { useMemo, useState, useEffect } from "react";
 import { FileChartColumnIncreasing, Info, Power } from "lucide-react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
-import { useSocket } from "@/hooks/useSocket";
 import { ReadingData } from "@/lib/types/readings";
 import { formatSeismicMonitorDate } from "@/lib/utils";
 import { EarthquakeData } from "@/lib/types/earthquake";
@@ -40,8 +39,6 @@ export default function Dashboard({ session }: { session: Session }) {
     to: new Date(),
   });
   const [cooldown, setCooldown] = useState(0);
-
-  const { isConnected } = useSocket();
 
   useEffect(() => {
     if (cooldown > 0) {
@@ -313,22 +310,6 @@ export default function Dashboard({ session }: { session: Session }) {
               disabled={readingsDataIsLoading}
             />
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-sm">
-                <div
-                  className={`h-2 w-2 rounded-full ${isConnected ? "bg-green-500" : "bg-red-500"}`}
-                />
-                <span
-                  className={isConnected ? "text-green-600" : "text-red-600"}
-                >
-                  {process.env.NEXT_PUBLIC_BACKEND_URL?.includes("vercel.app")
-                    ? isConnected
-                      ? "Auto-Update"
-                      : "Update Offline"
-                    : isConnected
-                      ? "Live"
-                      : "Offline"}
-                </span>
-              </div>
               <Button
                 className="flex gap-2"
                 disabled={
