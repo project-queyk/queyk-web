@@ -7,6 +7,7 @@ import { useMemo, useState, useEffect } from "react";
 import { FileChartColumnIncreasing, Info, Power } from "lucide-react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
+import { useSocket } from "@/hooks/useSocket";
 import { ReadingData } from "@/lib/types/readings";
 import { formatSeismicMonitorDate } from "@/lib/utils";
 import { EarthquakeData } from "@/lib/types/earthquake";
@@ -39,6 +40,8 @@ export default function Dashboard({ session }: { session: Session }) {
     to: new Date(),
   });
   const [cooldown, setCooldown] = useState(0);
+
+  const { isConnected } = useSocket();
 
   useEffect(() => {
     if (cooldown > 0) {
@@ -309,24 +312,36 @@ export default function Dashboard({ session }: { session: Session }) {
               startDate={persistedFirstDate}
               disabled={readingsDataIsLoading}
             />
-            <Button
-              className="flex gap-2"
-              disabled={
-                !formatSeismicMonitorDate(date) ||
-                readingsDataIsLoading ||
-                !!!readingsData?.data?.length
-              }
-              onClick={() =>
-                downloadReport(
-                  readingsData.pdfBase64,
-                  date?.from?.toISOString(),
-                  date?.to?.toISOString(),
-                )
-              }
-            >
-              <FileChartColumnIncreasing />
-              Generate
-            </Button>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 text-sm">
+                <div
+                  className={`h-2 w-2 rounded-full ${isConnected ? "bg-green-500" : "bg-red-500"}`}
+                />
+                <span
+                  className={isConnected ? "text-green-600" : "text-red-600"}
+                >
+                  {isConnected ? "Live" : "Offline"}
+                </span>
+              </div>
+              <Button
+                className="flex gap-2"
+                disabled={
+                  !formatSeismicMonitorDate(date) ||
+                  readingsDataIsLoading ||
+                  !!!readingsData?.data?.length
+                }
+                onClick={() =>
+                  downloadReport(
+                    readingsData.pdfBase64,
+                    date?.from?.toISOString(),
+                    date?.to?.toISOString(),
+                  )
+                }
+              >
+                <FileChartColumnIncreasing />
+                Generate
+              </Button>
+            </div>
           </div>
           <div className="grid gap-3 md:flex">
             <Card className="flex w-full">
