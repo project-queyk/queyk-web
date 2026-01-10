@@ -28,3 +28,25 @@ export function formatSeismicMonitorDate(date: DateRange | undefined) {
     return `${format(date.from, "MMM d, yyyy")} - ${format(date.to, "MMM d, yyyy")}`;
   }
 }
+
+export function getRiskLevelColor(level: string) {
+  switch (level) {
+    case "normal":
+    case "minor":
+      return "text-green-500";
+    case "elevated":
+    case "moderate":
+      return "text-yellow-500";
+    case "concerning":
+    case "major":
+      return "text-orange-500";
+    case "severe":
+      return "text-red-500";
+    default:
+      return "";
+  }
+}
+
+export function capitalizeFirstLetter(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
