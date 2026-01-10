@@ -8,15 +8,19 @@ import { FileChartColumnIncreasing, Info, Power } from "lucide-react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
 import { ReadingData } from "@/lib/types/readings";
-import { formatSeismicMonitorDate } from "@/lib/utils";
 import { EarthquakeData } from "@/lib/types/earthquake";
-
+import {
+  capitalizeFirstLetter,
+  formatSeismicMonitorDate,
+  getRiskLevelColor,
+} from "@/lib/utils";
 import {
   earthquakeChartConfig,
   readingChartConfig,
   skeletonEarthquakeConfig,
   skeletonReadingChartConfig,
 } from "@/lib/configs/chart";
+
 import {
   Card,
   CardContent,
@@ -165,6 +169,8 @@ export default function Dashboard({ session }: { session: Session }) {
       siAverage: reading.siAverage,
       siMaximum: reading.siMaximum,
       siMinimum: reading.siMinimum,
+      isSafe: reading.isSafe,
+      riskLevel: reading.riskLevel,
       battery: reading.battery,
     }));
   }, [readings, date, readingsDataIsLoading]);
@@ -674,6 +680,13 @@ export default function Dashboard({ session }: { session: Session }) {
                                   <span className="font-bold">
                                     {data.fullDateTime}
                                   </span>
+                                  <span
+                                    className={`font-bold ${getRiskLevelColor(
+                                      data.riskLevel,
+                                    )}`}
+                                  >
+                                    {capitalizeFirstLetter(data.riskLevel)}
+                                  </span>
                                 </div>
                               </div>
                               <div className="mt-2 flex flex-col gap-1">
@@ -799,6 +812,11 @@ export default function Dashboard({ session }: { session: Session }) {
                                       minute: "2-digit",
                                     },
                                   )}
+                                </span>
+                                <span
+                                  className={`font-bold ${getRiskLevelColor(data.riskLevel)}`}
+                                >
+                                  {capitalizeFirstLetter(data.riskLevel)}
                                 </span>
                               </div>
                             </div>
