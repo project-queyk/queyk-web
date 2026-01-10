@@ -6,4 +6,6 @@ export type ReadingData = {
   siMaximum: number;
   siMinimum: number;
   signalStrength: string;
+  isSafe: boolean;
+  riskLevel: "normal" | "elevated" | "concerning";
 };
