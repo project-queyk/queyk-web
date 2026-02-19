@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     }
 
     const response = await fetch(
-      `${process.env.BACKEND_URL}/v1/api/readings?startDate=${startDate}&endDate=${endDate}`,
+      `${process.env.BACKEND_URL}/v1/api/readings?startDate=${startDate}&endDate=${endDate}&platform=web`,
       {
         method: "GET",
         headers: {
