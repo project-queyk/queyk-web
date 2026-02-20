@@ -413,8 +413,8 @@ export default function LandingPage({ session }: { session: Session | null }) {
                 </p>
                 <Button
                   asChild
-                  variant="secondary"
-                  size="sm"
+                  variant="default"
+                  size="lg"
                   className="gap-1 pr-1.5"
                 >
                   <Link href="/protocols">
@@ -467,8 +467,9 @@ export default function LandingPage({ session }: { session: Session | null }) {
                       delay: 0.1 * index,
                     }}
                   >
+                  <a href={member.url} target="_blank">
                     <Image
-                      className="h-96 w-full rounded-md object-cover object-top grayscale transition-all duration-500 group-hover:h-[22.5rem] group-hover:rounded-xl hover:grayscale-0"
+                      className="h-96 w-full rounded-md object-cover object-top transition-all duration-500 sm:grayscale sm:group-hover:h-90 sm:group-hover:rounded-xl sm:hover:grayscale-0"
                       src={member.avatar}
                       alt={member.name}
                       width="826"
@@ -481,11 +482,12 @@ export default function LandingPage({ session }: { session: Session | null }) {
                         </h3>
                       </div>
                       <div className="mt-1 flex items-center justify-between">
-                        <span className="text-muted-foreground inline-block translate-y-6 text-sm opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                        <span className="text-muted-foreground inline-block translate-y-6 text-sm opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100 max-sm:translate-y-0 max-sm:opacity-100">
                           {member.role}
                         </span>
                       </div>
                     </div>
+                    </a>
                   </motion.div>
                 ))}
               </div>
