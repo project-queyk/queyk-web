@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { MapPin } from "lucide-react";
 
 export default function MobileFloorPlans() {
   const [isGif, setIsGif] = useState(false);
@@ -55,6 +56,7 @@ export default function MobileFloorPlans() {
             priority={currentFloor.id === "ground"}
             unoptimized={isGif ? true : false}
           />
+          {isGif && currentFloor.id === "ground" && <MapPin fill="red" strokeWidth={2} className="stroke-sky-50 size-8 animate-bounce bottom-8 left-14 absolute"/>}
         </button>
         {isGif && (
           <div className="grid gap-2">
