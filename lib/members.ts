@@ -3,7 +3,6 @@ import cabantac from "@/public/team/cabantac.png";
 import aspacio from "@/public/team/aspacio.png";
 import arugay from "@/public/team/arugay.png";
 import carbo from "@/public/team/carbo.png";
-import eser from "@/public/team/eser.png";
 
 export const members = [
   {
@@ -35,11 +34,5 @@ export const members = [
     role: "System Designer",
     avatar: carbo,
     url: "https://www.facebook.com/jerome.carbo.92",
-  },
-  {
-    name: "Fernandez Eser",
-    role: "Thesis Adviser",
-    avatar: eser,
-    url: "https://en.wikipedia.org/wiki/Alden_Richards",
   },
 ];
