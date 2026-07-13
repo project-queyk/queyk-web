@@ -1,8 +1,8 @@
-import madriaga from "@/public/team/madriaga.png";
-import cabantac from "@/public/team/cabantac.png";
+import madriaga from "@/public/team/madriaga.jpeg";
+import cabantac from "@/public/team/cabantac.jpg";
 import aspacio from "@/public/team/aspacio.png";
-import arugay from "@/public/team/arugay.png";
-import carbo from "@/public/team/carbo.png";
+import arugay from "@/public/team/arugay.jpg";
+import carbo from "@/public/team/carbo.jpeg";
 
 export const members = [
   {
