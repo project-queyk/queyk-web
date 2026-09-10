@@ -28,6 +28,7 @@ Queyk Web bridges IoT seismic hardware with institutional safety coordinators, s
 - **Domain-Restricted Authentication (Better Auth)**:
   - Integrated with **Better Auth** using Drizzle ORM and PostgreSQL.
   - Shares database sessions and user entities with the central backend server.
+  - Next.js API routes automatically forward the user's active Better Auth session token (`session.session.token`) to the backend API.
   - Google OAuth sign-in restricted to authorized institutional email domains (`AUTH_EMAIL_DOMAIN`).
   - Automatic account linking for verified Google credentials.
   - Branded access restriction page (`/error?error=AccessDenied`) for unauthorized domains.
